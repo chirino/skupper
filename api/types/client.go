@@ -95,7 +95,13 @@ type PrometheusServerOptions struct {
 	Password       string
 	PodAnnotations map[string]string
 }
-
+type ControlPlaneOptions struct {
+	EnabledControlPane  bool   // EnabledControlPane is true if the site is managed by the control plane
+	URL                 string // URL is the URL of the control plane
+	SiteId              string // SiteId is the id assigned by the control plane for the site
+	BearerTokenEnrypted string // BearerTokenEnrypted is the encrypted bearer token used to authenticate with the control plane
+	PrivateKey          string // PrivateKey is the private key that can be used to decrypt the bearer token
+}
 type SiteConfigSpec struct {
 	SkupperName              string
 	SkupperNamespace         string
@@ -129,6 +135,7 @@ type SiteConfigSpec struct {
 	RunAsGroup               int64
 	EnableClusterPermissions bool
 	EnableSkupperEvents      bool
+	ControlPlaneOptions      ControlPlaneOptions
 }
 
 const (

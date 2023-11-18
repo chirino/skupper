@@ -121,3 +121,19 @@ release/darwin.zip: release/darwin/skupper
 
 generate-manifest: build-manifest
 	./manifest
+
+# If the control pane api changes, you can update the api client by running:
+#    $ cp ../nexodus/internal/docs/swagger.yaml internal/control-api/swagger.yaml && make generate-openapi-client
+.PHONY: generate-openapi-client
+generate-openapi-client: ./internal/control-api/client.go ## Generate the OpenAPI Client for the control-api
+internal/control-api/%.go: internal/control-api/client.go
+internal/control-api/client.go: ./internal/control-api/swagger.yaml
+	rm -f $(shell find ./internal/control-api | grep .go | grep -v custom_)
+	docker run --rm -v $(CURDIR):/src --user $(shell id -u):$(shell id -g) \
+		openapitools/openapi-generator-cli:v6.5.0 \
+		generate -i /src/internal/control-api/swagger.yaml -g go \
+		--package-name control_api \
+		-o /src/internal/control-api \
+		--ignore-file-override /src/.openapi-generator-ignore
+	gofmt -w ./internal/control-api
+

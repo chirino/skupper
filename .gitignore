@@ -30,3 +30,6 @@
 
 # Generated files
 manifest.json
+
+# IDE files
+.idea
