@@ -60,7 +60,7 @@ func (cli *VanClient) ConnectorCreateSecretFromData(ctx context.Context, options
 		var secret = options.Secret
 
 		// Validating destination host
-		siteConfig, err := cli.SiteConfigInspect(context.Background(), nil)
+		siteConfig, err := cli.SiteConfigInspect(context.Background(), nil, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +163,7 @@ func isCertToken(secret *corev1.Secret) bool {
 func (cli *VanClient) ConnectorCreate(ctx context.Context, secret *corev1.Secret, options types.ConnectorCreateOptions) error {
 
 	err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		siteConfig, err := cli.SiteConfigInspectInNamespace(ctx, nil, options.SkupperNamespace)
+		siteConfig, err := cli.SiteConfigInspectInNamespace(ctx, nil, nil, options.SkupperNamespace)
 		if err != nil {
 			return err
 		}

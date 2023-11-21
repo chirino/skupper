@@ -1126,7 +1126,7 @@ func (cli *VanClient) GetRouterSpecFromOpts(options types.SiteConfigSpec, siteId
 		})
 	}
 	van.Transport.Routes = routes
-
+	van.ControlPlane = options.ControlPlane
 	return van
 }
 

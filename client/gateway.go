@@ -615,7 +615,7 @@ func (cli *VanClient) setupGatewayConfig(ctx context.Context, gatewayName string
 	}
 
 	// store the site id to prevent second gateway to different site
-	siteConfig, err := cli.SiteConfigInspect(ctx, nil)
+	siteConfig, err := cli.SiteConfigInspect(ctx, nil, nil)
 	if err != nil {
 		return fmt.Errorf("Failed to retrieve site id: %w", err)
 	}
@@ -1116,7 +1116,7 @@ func (cli *VanClient) GatewayInit(ctx context.Context, gatewayName string, gatew
 	// check if gw to different sites exists on host, only single host/gw/site allowed
 	existing, err := getGatewaySiteId(gatewayDir)
 	if err == nil {
-		siteConfig, err := cli.SiteConfigInspect(ctx, nil)
+		siteConfig, err := cli.SiteConfigInspect(ctx, nil, nil)
 		if err != nil {
 			return "", fmt.Errorf("Failed to retrieve site id: %w", err)
 		}

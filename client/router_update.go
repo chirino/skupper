@@ -588,7 +588,7 @@ func (cli *VanClient) RouterUpdateVersionInNamespace(ctx context.Context, hup bo
 	}
 	// Add ClusterRoleBinding to allow reading SkupperClusterPolicies (otherwise policy will be disabled)
 	if addClusterPolicy {
-		siteConfig, _ := cli.SiteConfigInspectInNamespace(ctx, nil, namespace)
+		siteConfig, _ := cli.SiteConfigInspectInNamespace(ctx, nil, nil, namespace)
 		if siteConfig != nil {
 			siteOwnerRef := asOwnerReference(siteConfig.Reference)
 			var ownerRefs []metav1.OwnerReference
@@ -622,7 +622,7 @@ func (cli *VanClient) RouterUpdateVersionInNamespace(ctx context.Context, hup bo
 	}
 
 	if substituteFlowCollector {
-		siteConfig, _ := cli.SiteConfigInspectInNamespace(ctx, nil, namespace)
+		siteConfig, _ := cli.SiteConfigInspectInNamespace(ctx, nil, nil, namespace)
 		if siteConfig.Spec.EnableConsole {
 			err = convertSiteConfigToCollectorEnabled(ctx, cli, namespace)
 			if err != nil {
@@ -647,7 +647,7 @@ func (cli *VanClient) RouterUpdateVersionInNamespace(ctx context.Context, hup bo
 	}
 
 	if addPrometheusServer {
-		siteConfig, _ := cli.SiteConfigInspectInNamespace(ctx, nil, namespace)
+		siteConfig, _ := cli.SiteConfigInspectInNamespace(ctx, nil, nil, namespace)
 		if siteConfig.Spec.EnableFlowCollector && siteConfig.Spec.PrometheusServer.ExternalServer == "" {
 			van := types.RouterSpec{
 				Namespace: namespace,
@@ -1041,7 +1041,7 @@ func (cli *VanClient) restartRouter(namespace string) error {
 }
 
 func (cli *VanClient) RouterUpdateLogging(ctx context.Context, settings *corev1.ConfigMap, hup bool) (bool, error) {
-	siteConfig, err := cli.SiteConfigInspect(ctx, settings)
+	siteConfig, err := cli.SiteConfigInspect(ctx, settings, nil)
 	if err != nil {
 		return false, err
 	}
@@ -1088,7 +1088,7 @@ func (cli *VanClient) updateAnnotationsOnDeployment(ctx context.Context, namespa
 }
 
 func (cli *VanClient) RouterUpdateAnnotations(ctx context.Context, settings *corev1.ConfigMap) (bool, error) {
-	siteConfig, err := cli.SiteConfigInspect(ctx, settings)
+	siteConfig, err := cli.SiteConfigInspect(ctx, settings, nil)
 	if err != nil {
 		return false, err
 	}

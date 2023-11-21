@@ -41,7 +41,7 @@ func (s *SiteContext) LoadConfig(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	siteConfig, _ := site.ReadSiteConfig(sconfig, s.namespace, s.defaultIngress())
+	siteConfig, _ := site.ReadSiteConfig(sconfig, nil, s.namespace, s.defaultIngress())
 
 	rconfig, err := s.getConfigMap(ctx, types.TransportConfigMapName)
 	if err != nil {

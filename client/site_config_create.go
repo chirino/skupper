@@ -11,7 +11,7 @@ import (
 )
 
 func (cli *VanClient) SiteConfigCreate(ctx context.Context, spec types.SiteConfigSpec) (*types.SiteConfig, error) {
-	siteConfig, err := site.WriteSiteConfig(spec, cli.Namespace)
+	siteConfig, siteSecrets, err := site.WriteSiteConfig(spec, cli.Namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -26,5 +26,16 @@ func (cli *VanClient) SiteConfigCreate(ctx context.Context, spec types.SiteConfi
 	if actual.TypeMeta.Kind == "" || actual.TypeMeta.APIVersion == "" { // why??
 		actual.TypeMeta = siteConfig.TypeMeta
 	}
-	return cli.SiteConfigInspect(ctx, actual)
+
+	if len(siteSecrets.Data) > 0 {
+		siteSecrets, err = cli.KubeClient.CoreV1().Secrets(cli.Namespace).Create(ctx, siteSecrets, metav1.CreateOptions{})
+		if err != nil {
+			return nil, err
+		}
+		if siteSecrets.TypeMeta.Kind == "" || siteSecrets.TypeMeta.APIVersion == "" { // why??
+			siteSecrets.TypeMeta = siteConfig.TypeMeta
+		}
+	}
+
+	return cli.SiteConfigInspect(ctx, actual, siteSecrets)
 }

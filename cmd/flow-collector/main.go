@@ -170,7 +170,7 @@ func main() {
 			log.Fatal("COLLECTOR: Error waiting for transport deployment to be ready ", err.Error())
 		}
 
-		siteConfig, err := cli.SiteConfigInspect(context.Background(), nil)
+		siteConfig, err := cli.SiteConfigInspect(context.Background(), nil, nil)
 		if err != nil {
 			log.Fatal("COLLECTOR: Error getting site config", err.Error())
 		}

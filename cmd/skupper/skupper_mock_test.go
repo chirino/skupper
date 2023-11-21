@@ -224,7 +224,7 @@ func (v *vanClientMock) SiteConfigUpdate(ctx context.Context, spec types.SiteCon
 	return nil, nil
 }
 
-func (v *vanClientMock) SiteConfigInspect(ctx context.Context, input *corev1.ConfigMap) (*types.SiteConfig, error) {
+func (v *vanClientMock) SiteConfigInspect(ctx context.Context, input *corev1.ConfigMap, secrets *corev1.Secret) (*types.SiteConfig, error) {
 	v.siteConfigInspectCalledWith = append(v.siteConfigInspectCalledWith, input)
 	return v.injectedReturns.siteConfigInspect.siteConfig, v.injectedReturns.siteConfigInspect.err
 }

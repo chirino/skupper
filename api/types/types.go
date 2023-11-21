@@ -33,6 +33,7 @@ const (
 	DefaultSiteName            string = "skupper-site"
 	ClusterLocalPostfix        string = ".svc.cluster.local"
 	SiteConfigMapName          string = "skupper-site"
+	SiteSecretName             string = "skupper-site"
 	NetworkStatusConfigMapName string = "skupper-network-status"
 	SiteLeaderLockName         string = "skupper-site-leader"
 )
@@ -387,6 +388,18 @@ type RouterSpec struct {
 	TransportCredentials  []Credential    `json:"transportCredentials,omitempty"`
 	ControllerCredentials []Credential    `json:"controllerCredentials,omitempty"`
 	PrometheusCredentials []Credential    `json:"prometheusCredentials,omitempty"`
+
+	ControlPlane ControlPlaneSpec `json:"controlPlane,omitempty"`
+}
+
+type ControlPlaneSpec struct {
+	Enabled               bool   `json:"enabled,omitempty"`               // Enabled is true if the site is managed by the control plane
+	URL                   string `json:"URL,omitempty"`                   // URL is the URL of the control plane
+	InsecureSkipTlsVerify bool   `json:"insecureSkipTlsVerify,omitempty"` // InsecureSkipTlsVerify is true if the control plane's certificate should not be verified
+	SiteId                string `json:"siteId,omitempty"`                // SiteId is the id assigned by the control plane for the site
+	VpcId                 string `json:"vpcId,omitempty"`                 // SiteId is the vpc id that the site is part ofa
+	BearerTokenEncrypted  string `json:"bearerTokenEncrypted,omitempty"`  // BearerTokenEncrypted is the encrypted bearer token used to authenticate with the control plane
+	PrivateKey            string `json:"privateKey,omitempty"`            // PrivateKey is the private key that can be used to decrypt the bearer token
 }
 
 type ImageDetails struct {

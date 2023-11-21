@@ -62,7 +62,7 @@ func (s *SkupperKubeSite) Create(cmd *cobra.Command, args []string) error {
 	}
 
 	routerCreateOpts.SkupperNamespace = ns
-	siteConfig, err := cli.SiteConfigInspect(context.Background(), nil)
+	siteConfig, err := cli.SiteConfigInspect(context.Background(), nil, nil)
 	if err != nil {
 		return err
 	}
@@ -234,7 +234,7 @@ func (s *SkupperKubeSite) Status(cmd *cobra.Command, args []string) error {
 		NetworkStatus: currentStatus,
 	}
 
-	siteConfig, err := s.kube.Cli.SiteConfigInspect(context.Background(), nil)
+	siteConfig, err := s.kube.Cli.SiteConfigInspect(context.Background(), nil, nil)
 	if err != nil || siteConfig == nil {
 		fmt.Printf("The site configuration is not available: %s", err)
 		fmt.Println()
@@ -276,7 +276,7 @@ func (s *SkupperKubeSite) Status(cmd *cobra.Command, args []string) error {
 
 			statusDataOutput.exposedServices = len(currentStatus.Addresses)
 
-			siteConfig, err := cli.SiteConfigInspect(context.Background(), nil)
+			siteConfig, err := cli.SiteConfigInspect(context.Background(), nil, nil)
 			if err != nil {
 				return err
 			} else {

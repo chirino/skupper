@@ -221,7 +221,7 @@ func (c *PolicyController) validateIncomingLinkStateChanged() {
 		return
 	}
 
-	siteConfig, err := c.cli.SiteConfigInspect(context.Background(), nil)
+	siteConfig, err := c.cli.SiteConfigInspect(context.Background(), nil, nil)
 	if err != nil {
 		event.Recordf(c.name, "[%s] error retrieving site config: %v", source, err)
 		return

@@ -78,6 +78,15 @@ func GetConfigMap(name string, namespace string, cli kubernetes.Interface) (*cor
 	}
 }
 
+func GetSecret(name string, namespace string, cli kubernetes.Interface) (*corev1.Secret, error) {
+	current, err := cli.CoreV1().Secrets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	} else {
+		return current, err
+	}
+}
+
 func UpdateSkupperServices(changed []types.ServiceInterface, deleted []string, origin string, namespace string, cli kubernetes.Interface) error {
 	current, err := cli.CoreV1().ConfigMaps(namespace).Get(context.TODO(), types.ServiceInterfaceConfigMap, metav1.GetOptions{})
 	if err == nil {

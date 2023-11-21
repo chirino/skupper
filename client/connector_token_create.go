@@ -82,7 +82,7 @@ func (cli *VanClient) ConnectorTokenCreate(ctx context.Context, subject string, 
 
 func (cli *VanClient) annotateConnectorToken(ctx context.Context, namespace string, token *corev1.Secret, version string) (bool, error) {
 	// get the host and port for inter-router and edge
-	siteConfig, err := cli.SiteConfigInspect(ctx, nil)
+	siteConfig, err := cli.SiteConfigInspect(ctx, nil, nil)
 	if err != nil {
 		return false, err
 	}

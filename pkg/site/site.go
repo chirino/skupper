@@ -55,6 +55,15 @@ const (
 	SiteConfigPrometheusServerMemoryLimitKey    string = "prometheus-server-memory-limit"
 	SiteConfigPrometheusServerPodAnnotationsKey string = "prometheus-server-pod-annotations"
 
+	// control plane options
+	SiteConfigControlPlaneEnabled                  string = "control-plane-enabled"
+	SiteConfigControlPlaneInsecureSkipTlsVerifyKey string = "control-plane-insecure-skip-tls-verify"
+	SiteConfigControlPlaneURLKey                   string = "control-plane-url"
+	SiteConfigControlPlaneSiteIdKey                string = "control-plane-site-id"
+	SiteConfigControlPlaneVpcIdKey                 string = "control-plane-vpc-id"
+	SiteConfigControlPlaneBearerTokenEncryptedKey  string = "control-plane-bearer-token-encrypted"
+	SiteConfigControlPlanePrivateKeyKey            string = "control-plane-private-key"
+
 	// router options
 	SiteConfigRouterConsoleKey             string = "router-console"
 	SiteConfigRouterLoggingKey             string = "router-logging"
@@ -105,7 +114,7 @@ const (
 	DefaultSkupperExtraLabels string = ""
 )
 
-func WriteSiteConfig(spec types.SiteConfigSpec, namespace string) (*corev1.ConfigMap, error) {
+func WriteSiteConfig(spec types.SiteConfigSpec, namespace string) (*corev1.ConfigMap, *corev1.Secret, error) {
 	var errs []string
 	siteConfig := &corev1.ConfigMap{
 		TypeMeta: metav1.TypeMeta{
@@ -133,6 +142,20 @@ func WriteSiteConfig(spec types.SiteConfigSpec, namespace string) (*corev1.Confi
 			SiteConfigIngressKey:               types.IngressLoadBalancerString,
 		},
 	}
+
+	siteSecrets := &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "ConfigMap",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        types.SiteSecretName,
+			Annotations: spec.Annotations,
+			Labels:      spec.Labels,
+		},
+		Data: map[string][]byte{},
+	}
+
 	if spec.SkupperName != "" {
 		siteConfig.Data[SiteConfigNameKey] = spec.SkupperName
 	}
@@ -442,6 +465,18 @@ func WriteSiteConfig(spec types.SiteConfigSpec, namespace string) (*corev1.Confi
 		siteConfig.Data[SiteConfigPrometheusServerPodAnnotationsKey] = strings.Join(annotations, ",")
 	}
 
+	if spec.ControlPlane.Enabled {
+		siteConfig.Data[SiteConfigControlPlaneEnabled] = "true"
+		siteConfig.Data[SiteConfigControlPlaneURLKey] = spec.ControlPlane.URL
+		if spec.ControlPlane.InsecureSkipTlsVerify {
+			siteConfig.Data[SiteConfigControlPlaneInsecureSkipTlsVerifyKey] = "true"
+		}
+		siteConfig.Data[SiteConfigControlPlaneSiteIdKey] = spec.ControlPlane.SiteId
+		siteConfig.Data[SiteConfigControlPlaneVpcIdKey] = spec.ControlPlane.VpcId
+		siteSecrets.Data[SiteConfigControlPlaneBearerTokenEncryptedKey] = []byte(spec.ControlPlane.BearerTokenEncrypted)
+		siteSecrets.Data[SiteConfigControlPlanePrivateKeyKey] = []byte(spec.ControlPlane.PrivateKey)
+	}
+
 	// TODO: allow Replicas to be set through skupper-site configmap?
 	if !spec.SiteControlled {
 		if siteConfig.ObjectMeta.Labels == nil {
@@ -462,12 +497,12 @@ func WriteSiteConfig(spec types.SiteConfigSpec, namespace string) (*corev1.Confi
 		}
 	}
 	if len(errs) > 0 {
-		return siteConfig, fmt.Errorf(strings.Join(errs, ", "))
+		return siteConfig, siteSecrets, fmt.Errorf(strings.Join(errs, ", "))
 	}
-	return siteConfig, nil
+	return siteConfig, siteSecrets, nil
 }
 
-func ReadSiteConfig(siteConfig *corev1.ConfigMap, namespace string, defaultIngress string) (*types.SiteConfig, error) {
+func ReadSiteConfig(siteConfig *corev1.ConfigMap, siteSecrets *corev1.Secret, namespace string, defaultIngress string) (*types.SiteConfig, error) {
 	var errs []string
 	var result types.SiteConfig
 	result.Spec.SkupperNamespace = siteConfig.Namespace
@@ -772,6 +807,15 @@ func ReadSiteConfig(siteConfig *corev1.ConfigMap, namespace string, defaultIngre
 	if prometheusPodAnnotations, ok := siteConfig.Data[SiteConfigPrometheusServerPodAnnotationsKey]; ok {
 		result.Spec.PrometheusServer.PodAnnotations = asMap(splitWithEscaping(prometheusPodAnnotations, ',', '\\'))
 	}
+	result.Spec.ControlPlane = types.ControlPlaneSpec{
+		Enabled:               parseBool(siteConfig.Data[SiteConfigControlPlaneEnabled]),
+		URL:                   siteConfig.Data[SiteConfigControlPlaneURLKey],
+		InsecureSkipTlsVerify: parseBool(siteConfig.Data[SiteConfigControlPlaneInsecureSkipTlsVerifyKey]),
+		SiteId:                siteConfig.Data[SiteConfigControlPlaneSiteIdKey],
+		VpcId:                 siteConfig.Data[SiteConfigControlPlaneVpcIdKey],
+		BearerTokenEncrypted:  string(siteSecrets.Data[SiteConfigControlPlaneBearerTokenEncryptedKey]),
+		PrivateKey:            string(siteSecrets.Data[SiteConfigControlPlanePrivateKeyKey]),
+	}
 
 	annotations, labels := GetSiteAnnotationsAndLabels(siteConfig)
 	result.Spec.Annotations = annotations
@@ -780,6 +824,11 @@ func ReadSiteConfig(siteConfig *corev1.ConfigMap, namespace string, defaultIngre
 		return &result, fmt.Errorf(strings.Join(errs, ", "))
 	}
 	return &result, nil
+}
+
+func parseBool(s string) bool {
+	v, _ := strconv.ParseBool(s)
+	return v
 }
 
 func GetSiteAnnotationsAndLabels(siteConfig *corev1.ConfigMap) (map[string]string, map[string]string) {

@@ -13,7 +13,7 @@ import (
 )
 
 func (cli *VanClient) appendRouterIngressHost(cred *types.Credential) bool {
-	config, err := cli.SiteConfigInspect(context.TODO(), nil)
+	config, err := cli.SiteConfigInspect(context.TODO(), nil, nil)
 	if err == nil {
 		host := config.Spec.GetRouterIngressHost()
 		if host != "" {
@@ -25,7 +25,7 @@ func (cli *VanClient) appendRouterIngressHost(cred *types.Credential) bool {
 }
 
 func (cli *VanClient) appendControllerIngressHost(cred *types.Credential) bool {
-	config, err := cli.SiteConfigInspect(context.TODO(), nil)
+	config, err := cli.SiteConfigInspect(context.TODO(), nil, nil)
 	if err == nil {
 		host := config.Spec.GetControllerIngressHost()
 		if host != "" {
@@ -43,7 +43,7 @@ func (cli *VanClient) regenerateSiteSecret(ctx context.Context, ca *corev1.Secre
 		Hosts:   []string{types.TransportServiceName + "." + namespace},
 	}
 
-	siteconfig, err := cli.SiteConfigInspectInNamespace(ctx, nil, namespace)
+	siteconfig, err := cli.SiteConfigInspectInNamespace(ctx, nil, nil, namespace)
 	if err != nil {
 		return err
 	}

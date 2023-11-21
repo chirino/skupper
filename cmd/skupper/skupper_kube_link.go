@@ -31,7 +31,7 @@ func (s *SkupperKubeLink) Platform() types.Platform {
 func (s *SkupperKubeLink) Create(cmd *cobra.Command, args []string) error {
 	silenceCobra(cmd)
 	cli := s.kube.Cli
-	siteConfig, err := cli.SiteConfigInspect(context.Background(), nil)
+	siteConfig, err := cli.SiteConfigInspect(context.Background(), nil, nil)
 	if err != nil {
 		fmt.Println("Unable to retrieve site config: ", err.Error())
 		os.Exit(1)
@@ -111,7 +111,7 @@ func (s *SkupperKubeLink) LinkHandler() domain.LinkHandler {
 	if s.linkHandler != nil {
 		return s.linkHandler
 	}
-	site, err := s.kube.Cli.SiteConfigInspect(context.Background(), nil)
+	site, err := s.kube.Cli.SiteConfigInspect(context.Background(), nil, nil)
 	if err != nil {
 		return nil
 	}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	control_api "github.com/skupperproject/skupper/internal/control-api"
 	"github.com/skupperproject/skupper/internal/crypto"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"reflect"
@@ -552,8 +553,10 @@ func registerWithControlPlane(initFlags *InitFlags, routerCreateOpts *types.Site
 	ctx := context.Background()
 	client, err := control_api.NewAPIClientWithOptions(ctx, controlPaneURL.String(), nil, options...)
 
-	regKeyModel, _, err := client.RegKeyApi.GetRegKey(ctx, "me").Execute()
+	regKeyModel, httpResp, err := client.RegKeyApi.GetRegKey(ctx, "me").Execute()
 	if err != nil {
+		x, _ := httputil.DumpResponse(httpResp, true)
+		fmt.Println(string(x))
 		return fmt.Errorf("could not fetch reg key settings: %w", err)
 	}
 
@@ -567,7 +570,7 @@ func registerWithControlPlane(initFlags *InitFlags, routerCreateOpts *types.Site
 	if err != nil {
 		return fmt.Errorf("could create key pair: %w", err)
 	}
-	pub, err := crypto.NewKey()
+	pub, err := priv.PublicKey()
 	if err != nil {
 		return fmt.Errorf("could create key pair: %w", err)
 	}
@@ -602,14 +605,16 @@ func registerWithControlPlane(initFlags *InitFlags, routerCreateOpts *types.Site
 	}
 
 	// Configure the router know it should connect to the control plane
-	routerCreateOpts.ControlPlaneOptions.EnabledControlPane = true
-	routerCreateOpts.ControlPlaneOptions.URL = controlPaneURL.String()
-	routerCreateOpts.ControlPlaneOptions.SiteId = site.GetId()
+	routerCreateOpts.ControlPlane.Enabled = true
+	routerCreateOpts.ControlPlane.InsecureSkipTlsVerify = initFlags.insecureSkipTlsVerify
+	routerCreateOpts.ControlPlane.URL = controlPaneURL.String()
+	routerCreateOpts.ControlPlane.SiteId = site.GetId()
+	routerCreateOpts.ControlPlane.VpcId = site.GetVpcId()
 
 	// Now that the site is registered, subsequent API calls must use the per site bearer token
 	// which can only be obtained by decrypting it with this private which will only be known by the site.
-	routerCreateOpts.ControlPlaneOptions.PrivateKey = priv.String()
-	routerCreateOpts.ControlPlaneOptions.BearerTokenEnrypted = site.GetBearerToken()
+	routerCreateOpts.ControlPlane.PrivateKey = priv.String()
+	routerCreateOpts.ControlPlane.BearerTokenEncrypted = site.GetBearerToken()
 
 	return nil
 }

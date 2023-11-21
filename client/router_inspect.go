@@ -19,7 +19,7 @@ import (
 )
 
 func (cli *VanClient) getConsoleUrl(namespace string) (string, error) {
-	config, err := cli.SiteConfigInspectInNamespace(context.Background(), nil, namespace)
+	config, err := cli.SiteConfigInspectInNamespace(context.Background(), nil, nil, namespace)
 	if err != nil {
 		return "", err
 	}
@@ -92,7 +92,7 @@ func (cli *VanClient) RouterInspectNamespace(ctx context.Context, namespace stri
 	}
 	current, err := cli.KubeClient.AppsV1().Deployments(namespace).Get(ctx, types.TransportDeploymentName, metav1.GetOptions{})
 	if err == nil {
-		siteConfig, err := cli.SiteConfigInspectInNamespace(ctx, nil, namespace)
+		siteConfig, err := cli.SiteConfigInspectInNamespace(ctx, nil, nil, namespace)
 		if err == nil && siteConfig != nil {
 			vir.Status.SiteName = siteConfig.Spec.SkupperName
 			connected, err := cli.getSitesInNetwork(siteConfig.Reference.UID, namespace)

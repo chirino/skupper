@@ -30,6 +30,7 @@ type SiteController struct {
 	tokenInformer        cache.SharedIndexInformer
 	tokenRequestInformer cache.SharedIndexInformer
 	workqueue            workqueue.RateLimitingInterface
+	siteSecretsInformer  cache.SharedIndexInformer
 }
 
 func NewSiteController(cli *client.VanClient) (*SiteController, error) {
@@ -46,6 +47,15 @@ func NewSiteController(cli *client.VanClient) (*SiteController, error) {
 	log.Printf("Version: %s", version.Version)
 
 	siteInformer := corev1informer.NewFilteredConfigMapInformer(
+		cli.KubeClient,
+		watchNamespace,
+		time.Second*30,
+		cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc},
+		internalinterfaces.TweakListOptionsFunc(func(options *metav1.ListOptions) {
+			options.FieldSelector = "metadata.name=skupper-site"
+			options.LabelSelector = "!" + types.SiteControllerIgnore
+		}))
+	siteSecretsInformer := corev1informer.NewFilteredSecretInformer(
 		cli.KubeClient,
 		watchNamespace,
 		time.Second*30,
@@ -75,6 +85,7 @@ func NewSiteController(cli *client.VanClient) (*SiteController, error) {
 	controller := &SiteController{
 		vanClient:            cli,
 		siteInformer:         siteInformer,
+		siteSecretsInformer:  siteSecretsInformer,
 		tokenInformer:        tokenInformer,
 		tokenRequestInformer: tokenRequestInformer,
 		workqueue:            workqueue,
@@ -283,7 +294,17 @@ func (c *SiteController) checkSite(key string) error {
 			c.checkAllForSite()
 		} else if errors.IsNotFound(err) {
 			log.Println("Initialising skupper site ...")
-			siteConfig, _ := c.vanClient.SiteConfigInspect(context.Background(), configmap)
+
+			siteSecretsObj, _, err := c.siteSecretsInformer.GetStore().GetByKey(configmap.Name)
+			if err != nil && errors.IsNotFound(err) {
+				return err
+			}
+			siteSecrets, ok := siteSecretsObj.(*corev1.Secret)
+			if !ok {
+				return fmt.Errorf("Expected Secret for %s but got %#v", key, obj)
+			}
+
+			siteConfig, _ := c.vanClient.SiteConfigInspect(context.Background(), configmap, siteSecrets)
 			siteConfig.Spec.SkupperNamespace = siteNamespace
 			if siteConfig.Spec.EnableClusterPermissions && !isClusterPermissionAllowed() {
 				siteConfig.Spec.EnableClusterPermissions = false

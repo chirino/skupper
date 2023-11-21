@@ -76,6 +76,8 @@ type Controller struct {
 	nodeWatcher       *NodeWatcher
 	tlsManager        *kubeqdr.TlsManager
 	eventHandler      event.EventHandlerInterface
+
+	controlPlaneController *ControlPlaneController
 }
 
 const (
@@ -178,7 +180,8 @@ func NewController(cli *client.VanClient, origin string, tlsConfig *certs.TlsCon
 	if err == nil {
 		siteCreationTime = uint64(configmap.ObjectMeta.CreationTimestamp.UnixNano()) / uint64(time.Microsecond)
 	}
-	siteConfig, _ := controller.vanClient.SiteConfigInspect(context.TODO(), configmap)
+	siteSecrets, _ := kube.GetSecret(types.SiteSecretName, cli.Namespace, cli.KubeClient)
+	siteConfig, _ := controller.vanClient.SiteConfigInspect(context.TODO(), configmap, siteSecrets)
 
 	var ttl time.Duration
 	var enableSkupperEvents = true
@@ -191,6 +194,14 @@ func NewController(cli *client.VanClient, origin string, tlsConfig *certs.TlsCon
 		controller.eventHandler = kube.NewSkupperEventRecorder(cli.Namespace, cli.KubeClient)
 	} else {
 		controller.eventHandler = event.NewDefaultEventLogger()
+	}
+
+	// Are we being managed by a central control plan?
+	if siteConfig.Spec.ControlPlane.Enabled {
+		controller.controlPlaneController, err = NewControlPlaneController(siteConfig.Spec.ControlPlane)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Organize service definitions
@@ -358,6 +369,9 @@ func (c *Controller) Run(stopCh <-chan struct{}) error {
 	c.tokenHandler.start(stopCh)
 	c.claimHandler.start(stopCh)
 	c.policyHandler.start(stopCh)
+	if c.controlPlaneController != nil {
+		c.controlPlaneController.start(stopCh)
+	}
 
 	log.Println("Started workers")
 	<-stopCh
@@ -366,6 +380,7 @@ func (c *Controller) Run(stopCh <-chan struct{}) error {
 	c.tokenHandler.stop()
 	c.claimHandler.stop()
 	c.policyHandler.stop()
+	c.controlPlaneController.stop()
 
 	return nil
 }

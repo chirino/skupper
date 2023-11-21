@@ -30,7 +30,7 @@ func (s *SkupperKubeNetwork) Status(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), types.DefaultTimeoutDuration)
 	defer cancel()
 
-	siteConfig, err := s.kube.Cli.SiteConfigInspect(ctx, nil)
+	siteConfig, err := s.kube.Cli.SiteConfigInspect(ctx, nil, nil)
 	if err != nil || siteConfig == nil {
 		fmt.Printf("The site configuration is not available: %s", err)
 		fmt.Println()
