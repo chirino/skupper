@@ -196,14 +196,6 @@ func NewController(cli *client.VanClient, origin string, tlsConfig *certs.TlsCon
 		controller.eventHandler = event.NewDefaultEventLogger()
 	}
 
-	// Are we being managed by a central control plan?
-	if siteConfig.Spec.ControlPlane.Enabled {
-		controller.controlPlaneController, err = NewControlPlaneController(siteConfig.Spec.ControlPlane)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	// Organize service definitions
 	controller.byOrigin = make(map[string]map[string]types.ServiceInterface)
 	controller.localServices = make(map[string]types.ServiceInterface)
@@ -239,6 +231,15 @@ func NewController(cli *client.VanClient, origin string, tlsConfig *certs.TlsCon
 	}
 	controller.nodeWatcher = NewNodeWatcher(controller.vanClient, nwHandler)
 	controller.tlsManager = &kubeqdr.TlsManager{KubeClient: controller.vanClient.KubeClient, Namespace: controller.vanClient.Namespace}
+
+	// Are we being managed by a central control plan?
+	if siteConfig.Spec.ControlPlane.Enabled {
+		controller.controlPlaneController, err = NewControlPlaneController(siteConfig.Spec.ControlPlane, controller)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return controller, nil
 }
 
