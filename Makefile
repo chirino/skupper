@@ -128,6 +128,7 @@ generate-manifest: build-manifest
 generate-openapi-client: ./internal/control-api/client.go ## Generate the OpenAPI Client for the control-api
 internal/control-api/%.go: internal/control-api/client.go
 internal/control-api/client.go: ./internal/control-api/swagger.yaml
+	# cp ../nexodus/internal/docs/swagger.yaml ./internal/control-api/swagger.yaml
 	rm -f $(shell find ./internal/control-api | grep .go | grep -v custom_)
 	docker run --rm -v $(CURDIR):/src --user $(shell id -u):$(shell id -g) \
 		openapitools/openapi-generator-cli:v6.5.0 \
@@ -141,5 +142,8 @@ internal/control-api/client.go: ./internal/control-api/swagger.yaml
 KIND_CLUSTER?=skupper
 .PHONY: kind-load-images
 kind-load-images: ## Load images into a kind cluster ${KIND_CLUSTER}
+	go build -ldflags="${LDFLAGS}"  -o skupper ./cmd/skupper
 	${DOCKER} build -t ${SERVICE_CONTROLLER_IMAGE}:main -f Dockerfile.service-controller .
 	kind load --name $(KIND_CLUSTER) docker-image ${SERVICE_CONTROLLER_IMAGE}:main
+	kubectl -n west rollout restart deployment skupper-service-controller
+	kubectl -n east rollout restart deployment skupper-service-controller

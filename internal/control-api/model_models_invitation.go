@@ -19,10 +19,14 @@ var _ MappedNullable = &ModelsInvitation{}
 
 // ModelsInvitation struct for ModelsInvitation
 type ModelsInvitation struct {
-	ExpiresAt      *string `json:"expires_at,omitempty"`
-	Id             *string `json:"id,omitempty"`
-	OrganizationId *string `json:"organization_id,omitempty"`
-	UserId         *string `json:"user_id,omitempty"`
+	// The email address to invite
+	Email          *string             `json:"email,omitempty"`
+	ExpiresAt      *string             `json:"expires_at,omitempty"`
+	From           *ModelsUser         `json:"from,omitempty"`
+	Id             *string             `json:"id,omitempty"`
+	Organization   *ModelsOrganization `json:"organization,omitempty"`
+	OrganizationId *string             `json:"organization_id,omitempty"`
+	UserId         *string             `json:"user_id,omitempty"`
 }
 
 // NewModelsInvitation instantiates a new ModelsInvitation object
@@ -40,6 +44,38 @@ func NewModelsInvitation() *ModelsInvitation {
 func NewModelsInvitationWithDefaults() *ModelsInvitation {
 	this := ModelsInvitation{}
 	return &this
+}
+
+// GetEmail returns the Email field value if set, zero value otherwise.
+func (o *ModelsInvitation) GetEmail() string {
+	if o == nil || IsNil(o.Email) {
+		var ret string
+		return ret
+	}
+	return *o.Email
+}
+
+// GetEmailOk returns a tuple with the Email field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsInvitation) GetEmailOk() (*string, bool) {
+	if o == nil || IsNil(o.Email) {
+		return nil, false
+	}
+	return o.Email, true
+}
+
+// HasEmail returns a boolean if a field has been set.
+func (o *ModelsInvitation) HasEmail() bool {
+	if o != nil && !IsNil(o.Email) {
+		return true
+	}
+
+	return false
+}
+
+// SetEmail gets a reference to the given string and assigns it to the Email field.
+func (o *ModelsInvitation) SetEmail(v string) {
+	o.Email = &v
 }
 
 // GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise.
@@ -74,6 +110,38 @@ func (o *ModelsInvitation) SetExpiresAt(v string) {
 	o.ExpiresAt = &v
 }
 
+// GetFrom returns the From field value if set, zero value otherwise.
+func (o *ModelsInvitation) GetFrom() ModelsUser {
+	if o == nil || IsNil(o.From) {
+		var ret ModelsUser
+		return ret
+	}
+	return *o.From
+}
+
+// GetFromOk returns a tuple with the From field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsInvitation) GetFromOk() (*ModelsUser, bool) {
+	if o == nil || IsNil(o.From) {
+		return nil, false
+	}
+	return o.From, true
+}
+
+// HasFrom returns a boolean if a field has been set.
+func (o *ModelsInvitation) HasFrom() bool {
+	if o != nil && !IsNil(o.From) {
+		return true
+	}
+
+	return false
+}
+
+// SetFrom gets a reference to the given ModelsUser and assigns it to the From field.
+func (o *ModelsInvitation) SetFrom(v ModelsUser) {
+	o.From = &v
+}
+
 // GetId returns the Id field value if set, zero value otherwise.
 func (o *ModelsInvitation) GetId() string {
 	if o == nil || IsNil(o.Id) {
@@ -104,6 +172,38 @@ func (o *ModelsInvitation) HasId() bool {
 // SetId gets a reference to the given string and assigns it to the Id field.
 func (o *ModelsInvitation) SetId(v string) {
 	o.Id = &v
+}
+
+// GetOrganization returns the Organization field value if set, zero value otherwise.
+func (o *ModelsInvitation) GetOrganization() ModelsOrganization {
+	if o == nil || IsNil(o.Organization) {
+		var ret ModelsOrganization
+		return ret
+	}
+	return *o.Organization
+}
+
+// GetOrganizationOk returns a tuple with the Organization field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsInvitation) GetOrganizationOk() (*ModelsOrganization, bool) {
+	if o == nil || IsNil(o.Organization) {
+		return nil, false
+	}
+	return o.Organization, true
+}
+
+// HasOrganization returns a boolean if a field has been set.
+func (o *ModelsInvitation) HasOrganization() bool {
+	if o != nil && !IsNil(o.Organization) {
+		return true
+	}
+
+	return false
+}
+
+// SetOrganization gets a reference to the given ModelsOrganization and assigns it to the Organization field.
+func (o *ModelsInvitation) SetOrganization(v ModelsOrganization) {
+	o.Organization = &v
 }
 
 // GetOrganizationId returns the OrganizationId field value if set, zero value otherwise.
@@ -180,11 +280,20 @@ func (o ModelsInvitation) MarshalJSON() ([]byte, error) {
 
 func (o ModelsInvitation) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Email) {
+		toSerialize["email"] = o.Email
+	}
 	if !IsNil(o.ExpiresAt) {
 		toSerialize["expires_at"] = o.ExpiresAt
 	}
+	if !IsNil(o.From) {
+		toSerialize["from"] = o.From
+	}
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
+	}
+	if !IsNil(o.Organization) {
+		toSerialize["organization"] = o.Organization
 	}
 	if !IsNil(o.OrganizationId) {
 		toSerialize["organization_id"] = o.OrganizationId

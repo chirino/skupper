@@ -19,7 +19,9 @@ var _ MappedNullable = &ModelsUser{}
 
 // ModelsUser struct for ModelsUser
 type ModelsUser struct {
+	FullName *string `json:"full_name,omitempty"`
 	Id       *string `json:"id,omitempty"`
+	Picture  *string `json:"picture,omitempty"`
 	Username *string `json:"username,omitempty"`
 }
 
@@ -38,6 +40,38 @@ func NewModelsUser() *ModelsUser {
 func NewModelsUserWithDefaults() *ModelsUser {
 	this := ModelsUser{}
 	return &this
+}
+
+// GetFullName returns the FullName field value if set, zero value otherwise.
+func (o *ModelsUser) GetFullName() string {
+	if o == nil || IsNil(o.FullName) {
+		var ret string
+		return ret
+	}
+	return *o.FullName
+}
+
+// GetFullNameOk returns a tuple with the FullName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsUser) GetFullNameOk() (*string, bool) {
+	if o == nil || IsNil(o.FullName) {
+		return nil, false
+	}
+	return o.FullName, true
+}
+
+// HasFullName returns a boolean if a field has been set.
+func (o *ModelsUser) HasFullName() bool {
+	if o != nil && !IsNil(o.FullName) {
+		return true
+	}
+
+	return false
+}
+
+// SetFullName gets a reference to the given string and assigns it to the FullName field.
+func (o *ModelsUser) SetFullName(v string) {
+	o.FullName = &v
 }
 
 // GetId returns the Id field value if set, zero value otherwise.
@@ -70,6 +104,38 @@ func (o *ModelsUser) HasId() bool {
 // SetId gets a reference to the given string and assigns it to the Id field.
 func (o *ModelsUser) SetId(v string) {
 	o.Id = &v
+}
+
+// GetPicture returns the Picture field value if set, zero value otherwise.
+func (o *ModelsUser) GetPicture() string {
+	if o == nil || IsNil(o.Picture) {
+		var ret string
+		return ret
+	}
+	return *o.Picture
+}
+
+// GetPictureOk returns a tuple with the Picture field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsUser) GetPictureOk() (*string, bool) {
+	if o == nil || IsNil(o.Picture) {
+		return nil, false
+	}
+	return o.Picture, true
+}
+
+// HasPicture returns a boolean if a field has been set.
+func (o *ModelsUser) HasPicture() bool {
+	if o != nil && !IsNil(o.Picture) {
+		return true
+	}
+
+	return false
+}
+
+// SetPicture gets a reference to the given string and assigns it to the Picture field.
+func (o *ModelsUser) SetPicture(v string) {
+	o.Picture = &v
 }
 
 // GetUsername returns the Username field value if set, zero value otherwise.
@@ -114,8 +180,14 @@ func (o ModelsUser) MarshalJSON() ([]byte, error) {
 
 func (o ModelsUser) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.FullName) {
+		toSerialize["full_name"] = o.FullName
+	}
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
+	}
+	if !IsNil(o.Picture) {
+		toSerialize["picture"] = o.Picture
 	}
 	if !IsNil(o.Username) {
 		toSerialize["username"] = o.Username

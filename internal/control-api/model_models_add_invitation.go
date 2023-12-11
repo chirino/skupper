@@ -19,11 +19,11 @@ var _ MappedNullable = &ModelsAddInvitation{}
 
 // ModelsAddInvitation struct for ModelsAddInvitation
 type ModelsAddInvitation struct {
+	// The email address of the user to invite (one of email or user_id is required)
+	Email          *string `json:"email,omitempty"`
 	OrganizationId *string `json:"organization_id,omitempty"`
-	// The user id to invite (one of username or user_id is required)
+	// The user id to invite (one of email or user_id is required)
 	UserId *string `json:"user_id,omitempty"`
-	// The username to invite (one of username or user_id is required)
-	UserName *string `json:"user_name,omitempty"`
 }
 
 // NewModelsAddInvitation instantiates a new ModelsAddInvitation object
@@ -41,6 +41,38 @@ func NewModelsAddInvitation() *ModelsAddInvitation {
 func NewModelsAddInvitationWithDefaults() *ModelsAddInvitation {
 	this := ModelsAddInvitation{}
 	return &this
+}
+
+// GetEmail returns the Email field value if set, zero value otherwise.
+func (o *ModelsAddInvitation) GetEmail() string {
+	if o == nil || IsNil(o.Email) {
+		var ret string
+		return ret
+	}
+	return *o.Email
+}
+
+// GetEmailOk returns a tuple with the Email field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsAddInvitation) GetEmailOk() (*string, bool) {
+	if o == nil || IsNil(o.Email) {
+		return nil, false
+	}
+	return o.Email, true
+}
+
+// HasEmail returns a boolean if a field has been set.
+func (o *ModelsAddInvitation) HasEmail() bool {
+	if o != nil && !IsNil(o.Email) {
+		return true
+	}
+
+	return false
+}
+
+// SetEmail gets a reference to the given string and assigns it to the Email field.
+func (o *ModelsAddInvitation) SetEmail(v string) {
+	o.Email = &v
 }
 
 // GetOrganizationId returns the OrganizationId field value if set, zero value otherwise.
@@ -107,38 +139,6 @@ func (o *ModelsAddInvitation) SetUserId(v string) {
 	o.UserId = &v
 }
 
-// GetUserName returns the UserName field value if set, zero value otherwise.
-func (o *ModelsAddInvitation) GetUserName() string {
-	if o == nil || IsNil(o.UserName) {
-		var ret string
-		return ret
-	}
-	return *o.UserName
-}
-
-// GetUserNameOk returns a tuple with the UserName field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsAddInvitation) GetUserNameOk() (*string, bool) {
-	if o == nil || IsNil(o.UserName) {
-		return nil, false
-	}
-	return o.UserName, true
-}
-
-// HasUserName returns a boolean if a field has been set.
-func (o *ModelsAddInvitation) HasUserName() bool {
-	if o != nil && !IsNil(o.UserName) {
-		return true
-	}
-
-	return false
-}
-
-// SetUserName gets a reference to the given string and assigns it to the UserName field.
-func (o *ModelsAddInvitation) SetUserName(v string) {
-	o.UserName = &v
-}
-
 func (o ModelsAddInvitation) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -149,14 +149,14 @@ func (o ModelsAddInvitation) MarshalJSON() ([]byte, error) {
 
 func (o ModelsAddInvitation) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Email) {
+		toSerialize["email"] = o.Email
+	}
 	if !IsNil(o.OrganizationId) {
 		toSerialize["organization_id"] = o.OrganizationId
 	}
 	if !IsNil(o.UserId) {
 		toSerialize["user_id"] = o.UserId
-	}
-	if !IsNil(o.UserName) {
-		toSerialize["user_name"] = o.UserName
 	}
 	return toSerialize, nil
 }

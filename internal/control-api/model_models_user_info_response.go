@@ -19,6 +19,8 @@ var _ MappedNullable = &ModelsUserInfoResponse{}
 
 // ModelsUserInfoResponse struct for ModelsUserInfoResponse
 type ModelsUserInfoResponse struct {
+	Email             *string `json:"email,omitempty"`
+	EmailVerified     *bool   `json:"email_verified,omitempty"`
 	FamilyName        *string `json:"family_name,omitempty"`
 	GivenName         *string `json:"given_name,omitempty"`
 	Picture           *string `json:"picture,omitempty"`
@@ -42,6 +44,70 @@ func NewModelsUserInfoResponse() *ModelsUserInfoResponse {
 func NewModelsUserInfoResponseWithDefaults() *ModelsUserInfoResponse {
 	this := ModelsUserInfoResponse{}
 	return &this
+}
+
+// GetEmail returns the Email field value if set, zero value otherwise.
+func (o *ModelsUserInfoResponse) GetEmail() string {
+	if o == nil || IsNil(o.Email) {
+		var ret string
+		return ret
+	}
+	return *o.Email
+}
+
+// GetEmailOk returns a tuple with the Email field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsUserInfoResponse) GetEmailOk() (*string, bool) {
+	if o == nil || IsNil(o.Email) {
+		return nil, false
+	}
+	return o.Email, true
+}
+
+// HasEmail returns a boolean if a field has been set.
+func (o *ModelsUserInfoResponse) HasEmail() bool {
+	if o != nil && !IsNil(o.Email) {
+		return true
+	}
+
+	return false
+}
+
+// SetEmail gets a reference to the given string and assigns it to the Email field.
+func (o *ModelsUserInfoResponse) SetEmail(v string) {
+	o.Email = &v
+}
+
+// GetEmailVerified returns the EmailVerified field value if set, zero value otherwise.
+func (o *ModelsUserInfoResponse) GetEmailVerified() bool {
+	if o == nil || IsNil(o.EmailVerified) {
+		var ret bool
+		return ret
+	}
+	return *o.EmailVerified
+}
+
+// GetEmailVerifiedOk returns a tuple with the EmailVerified field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsUserInfoResponse) GetEmailVerifiedOk() (*bool, bool) {
+	if o == nil || IsNil(o.EmailVerified) {
+		return nil, false
+	}
+	return o.EmailVerified, true
+}
+
+// HasEmailVerified returns a boolean if a field has been set.
+func (o *ModelsUserInfoResponse) HasEmailVerified() bool {
+	if o != nil && !IsNil(o.EmailVerified) {
+		return true
+	}
+
+	return false
+}
+
+// SetEmailVerified gets a reference to the given bool and assigns it to the EmailVerified field.
+func (o *ModelsUserInfoResponse) SetEmailVerified(v bool) {
+	o.EmailVerified = &v
 }
 
 // GetFamilyName returns the FamilyName field value if set, zero value otherwise.
@@ -246,6 +312,12 @@ func (o ModelsUserInfoResponse) MarshalJSON() ([]byte, error) {
 
 func (o ModelsUserInfoResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Email) {
+		toSerialize["email"] = o.Email
+	}
+	if !IsNil(o.EmailVerified) {
+		toSerialize["email_verified"] = o.EmailVerified
+	}
 	if !IsNil(o.FamilyName) {
 		toSerialize["family_name"] = o.FamilyName
 	}

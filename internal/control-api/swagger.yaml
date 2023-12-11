@@ -35,13 +35,14 @@ definitions:
     type: object
   models.AddInvitation:
     properties:
+      email:
+        description: The email address of the user to invite (one of email or user_id
+          is required)
+        type: string
       organization_id:
         type: string
       user_id:
-        description: The user id to invite (one of username or user_id is required)
-        type: string
-      user_name:
-        description: The username to invite (one of username or user_id is required)
+        description: The user id to invite (one of email or user_id is required)
         type: string
     type: object
   models.AddOrganization:
@@ -125,6 +126,77 @@ definitions:
     properties:
       error:
         example: something bad
+        type: string
+    type: object
+  models.CertificateSigningRequest:
+    properties:
+      duration:
+        description: |-
+          Requested 'duration' (i.e. lifetime) of the Certificate. Note that the
+          issuer may choose to ignore the requested duration, just like any other
+          requested attribute.
+          +optional
+        type: string
+      is_ca:
+        description: |-
+          Requested basic constraints isCA value. Note that the issuer may choose
+          to ignore the requested isCA value, just like any other requested attribute.
+
+          NOTE: If the CSR in the `Request` field has a BasicConstraints extension,
+          it must have the same isCA value as specified here.
+
+          If true, this will automatically add the `cert sign` usage to the list
+          of requested `usages`.
+          +optional
+        type: boolean
+      request:
+        description: |-
+          The PEM-encoded X.509 certificate signing request to be submitted to the
+          issuer for signing.
+
+          If the CSR has a BasicConstraints extension, its isCA attribute must
+          match the `isCA` value of this CertificateRequest.
+          If the CSR has a KeyUsage extension, its key usages must match the
+          key usages in the `usages` field of this CertificateRequest.
+          If the CSR has a ExtKeyUsage extension, its extended key usages
+          must match the extended key usages in the `usages` field of this
+          CertificateRequest.
+        example: '-----BEGIN CERTIFICATE REQUEST-----(...)-----END CERTIFICATE REQUEST-----'
+        type: string
+      usages:
+        description: |-
+          Requested key usages and extended key usages.
+
+          NOTE: If the CSR in the `Request` field has uses the KeyUsage or
+          ExtKeyUsage extension, these extensions must have the same values
+          as specified here without any additional values.
+
+          If unset, defaults to `digital signature` and `key encipherment`.
+          +optional
+        items:
+          $ref: '#/definitions/models.KeyUsage'
+        type: array
+    type: object
+  models.CertificateSigningResponse:
+    properties:
+      ca:
+        description: |-
+          The PEM encoded X.509 certificate of the signer, also known as the CA
+          (Certificate Authority).
+          This is set on a best-effort basis by different issuers.
+          If not set, the CA is assumed to be unknown/not available.
+          +optional
+        example: '-----BEGIN CERTIFICATE-----(...)-----END CERTIFICATE-----'
+        type: string
+      certificate:
+        description: |-
+          The PEM encoded X.509 certificate resulting from the certificate
+          signing request.
+          If not set, the CertificateRequest has either not been completed or has
+          failed. More information on failure can be found by checking the
+          `conditions` field.
+          +optional
+        example: '-----BEGIN CERTIFICATE-----(...)-----END CERTIFICATE-----'
         type: string
     type: object
   models.ConflictsError:
@@ -236,16 +308,73 @@ definitions:
     type: object
   models.Invitation:
     properties:
+      email:
+        description: The email address to invite
+        type: string
       expires_at:
         type: string
+      from:
+        $ref: '#/definitions/models.User'
       id:
         example: aa22666c-0f57-45cb-a449-16efecc04f2e
         type: string
+      organization:
+        $ref: '#/definitions/models.Organization'
       organization_id:
         type: string
       user_id:
         type: string
     type: object
+  models.KeyUsage:
+    enum:
+    - signing
+    - digital signature
+    - content commitment
+    - key encipherment
+    - key agreement
+    - data encipherment
+    - cert sign
+    - crl sign
+    - encipher only
+    - decipher only
+    - any
+    - server auth
+    - client auth
+    - code signing
+    - email protection
+    - s/mime
+    - ipsec end system
+    - ipsec tunnel
+    - ipsec user
+    - timestamping
+    - ocsp signing
+    - microsoft sgc
+    - netscape sgc
+    type: string
+    x-enum-varnames:
+    - UsageSigning
+    - UsageDigitalSignature
+    - UsageContentCommitment
+    - UsageKeyEncipherment
+    - UsageKeyAgreement
+    - UsageDataEncipherment
+    - UsageCertSign
+    - UsageCRLSign
+    - UsageEncipherOnly
+    - UsageDecipherOnly
+    - UsageAny
+    - UsageServerAuth
+    - UsageClientAuth
+    - UsageCodeSigning
+    - UsageEmailProtection
+    - UsageSMIME
+    - UsageIPsecEndSystem
+    - UsageIPsecTunnel
+    - UsageIPsecUser
+    - UsageTimestamping
+    - UsageOCSPSigning
+    - UsageMicrosoftSGC
+    - UsageNetscapeSGC
   models.LoginEndRequest:
     properties:
       request_url:
@@ -490,14 +619,22 @@ definitions:
     type: object
   models.User:
     properties:
+      full_name:
+        type: string
       id:
         example: aa22666c-0f57-45cb-a449-16efecc04f2e
+        type: string
+      picture:
         type: string
       username:
         type: string
     type: object
   models.UserInfoResponse:
     properties:
+      email:
+        type: string
+      email_verified:
+        type: boolean
       family_name:
         type: string
       given_name:
@@ -513,6 +650,8 @@ definitions:
     type: object
   models.VPC:
     properties:
+      ca_certificate:
+        type: string
       description:
         type: string
       id:
@@ -566,6 +705,37 @@ info:
   title: Nexodus API
   version: "1.0"
 paths:
+  /api/ca/sign:
+    post:
+      consumes:
+      - application/json
+      description: Signs a certificate signing request
+      operationId: SignCSR
+      parameters:
+      - description: Certificate signing request
+        in: body
+        name: CertificateSigningRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.CertificateSigningRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.CertificateSigningResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Signs a certificate signing request
+      tags:
+      - CA
   /api/devices:
     get:
       consumes:

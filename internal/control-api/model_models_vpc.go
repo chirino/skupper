@@ -19,6 +19,7 @@ var _ MappedNullable = &ModelsVPC{}
 
 // ModelsVPC struct for ModelsVPC
 type ModelsVPC struct {
+	CaCertificate  *string `json:"ca_certificate,omitempty"`
 	Description    *string `json:"description,omitempty"`
 	Id             *string `json:"id,omitempty"`
 	Ipv4Cidr       *string `json:"ipv4_cidr,omitempty"`
@@ -42,6 +43,38 @@ func NewModelsVPC() *ModelsVPC {
 func NewModelsVPCWithDefaults() *ModelsVPC {
 	this := ModelsVPC{}
 	return &this
+}
+
+// GetCaCertificate returns the CaCertificate field value if set, zero value otherwise.
+func (o *ModelsVPC) GetCaCertificate() string {
+	if o == nil || IsNil(o.CaCertificate) {
+		var ret string
+		return ret
+	}
+	return *o.CaCertificate
+}
+
+// GetCaCertificateOk returns a tuple with the CaCertificate field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsVPC) GetCaCertificateOk() (*string, bool) {
+	if o == nil || IsNil(o.CaCertificate) {
+		return nil, false
+	}
+	return o.CaCertificate, true
+}
+
+// HasCaCertificate returns a boolean if a field has been set.
+func (o *ModelsVPC) HasCaCertificate() bool {
+	if o != nil && !IsNil(o.CaCertificate) {
+		return true
+	}
+
+	return false
+}
+
+// SetCaCertificate gets a reference to the given string and assigns it to the CaCertificate field.
+func (o *ModelsVPC) SetCaCertificate(v string) {
+	o.CaCertificate = &v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
@@ -246,6 +279,9 @@ func (o ModelsVPC) MarshalJSON() ([]byte, error) {
 
 func (o ModelsVPC) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.CaCertificate) {
+		toSerialize["ca_certificate"] = o.CaCertificate
+	}
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
