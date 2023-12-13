@@ -63,7 +63,7 @@ func (cli *VanClient) regenerateSiteSecret(ctx context.Context, ca *corev1.Secre
 	if err != nil {
 		return err
 	}
-	return cli.restartRouter(namespace)
+	return cli.RestartRouter(namespace)
 }
 
 func (cli *VanClient) RevokeAccess(ctx context.Context) error {

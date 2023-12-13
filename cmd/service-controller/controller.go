@@ -234,7 +234,7 @@ func NewController(cli *client.VanClient, origin string, tlsConfig *certs.TlsCon
 
 	// Are we being managed by a central control plan?
 	if siteConfig.Spec.ControlPlane.Enabled {
-		controller.controlPlaneController, err = NewControlPlaneController(siteConfig.Spec.ControlPlane, controller)
+		controller.controlPlaneController, err = NewControlPlaneController(cli, siteConfig.Spec.ControlPlane, controller)
 		if err != nil {
 			return nil, err
 		}

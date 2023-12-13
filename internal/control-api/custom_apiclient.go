@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
@@ -33,10 +34,32 @@ func NewAPIClientWithOptions(ctx context.Context, addr string, authcb func(strin
 		Timeout:   30 * time.Second,
 		KeepAlive: 30 * time.Second,
 	}
+	dialContext := dialer.DialContext
+	if opts.address != "" {
+		dialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+			address, port, err := net.SplitHostPort(addr)
+			if err != nil {
+				return nil, err
+			}
+			if strings.ContainsAny(opts.address, ":") {
+				// the address can be a host:port combo...
+				address, port, err = net.SplitHostPort(opts.address)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				// or just a host name..
+				address = opts.address
+			}
+			return dialer.DialContext(ctx, network, fmt.Sprintf("%s:%s", address, port))
+		}
+	}
+
 	clientConfig := NewConfiguration()
 	clientConfig.HTTPClient = &http.Client{
+
 		Transport: &http.Transport{
-			DialContext:           dialer.DialContext,
+			DialContext:           dialContext,
 			TLSHandshakeTimeout:   10 * time.Second,
 			ResponseHeaderTimeout: 30 * time.Second,
 			ExpectContinueTimeout: 5 * time.Second,

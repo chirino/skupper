@@ -14,6 +14,7 @@ type options struct {
 	tlsConfig    *tls.Config
 	bearerToken  string
 	userAgent    string
+	address      string
 }
 
 type TokenStore interface {
@@ -50,6 +51,13 @@ func WithUserAgent(
 ) Option {
 	return func(o *options) error {
 		o.userAgent = userAgent
+		return nil
+	}
+}
+
+func WithHostAddress(address string) Option {
+	return func(o *options) error {
+		o.address = address
 		return nil
 	}
 }

@@ -1030,7 +1030,7 @@ func updateGatewayMultiport(ctx context.Context, cli *VanClient) error {
 	return nil
 }
 
-func (cli *VanClient) restartRouter(namespace string) error {
+func (cli *VanClient) RestartRouter(namespace string) error {
 	router, err := cli.KubeClient.AppsV1().Deployments(namespace).Get(context.TODO(), types.TransportDeploymentName, metav1.GetOptions{})
 	if err != nil {
 		return err
@@ -1061,7 +1061,7 @@ func (cli *VanClient) RouterUpdateLogging(ctx context.Context, settings *corev1.
 			return false, err
 		}
 		if hup {
-			err = cli.restartRouter(settings.ObjectMeta.Namespace)
+			err = cli.RestartRouter(settings.ObjectMeta.Namespace)
 			if err != nil {
 				return false, err
 			}

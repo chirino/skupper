@@ -395,6 +395,7 @@ type RouterSpec struct {
 type ControlPlaneSpec struct {
 	Enabled               bool   `json:"enabled,omitempty"`               // Enabled is true if the site is managed by the control plane
 	URL                   string `json:"URL,omitempty"`                   // URL is the URL of the control plane
+	Address               string `json:"address,omitempty"`               // Address is the IP or hostname of the control plane.  If not specified, the URL will be used
 	InsecureSkipTlsVerify bool   `json:"insecureSkipTlsVerify,omitempty"` // InsecureSkipTlsVerify is true if the control plane's certificate should not be verified
 	SiteId                string `json:"siteId,omitempty"`                // SiteId is the id assigned by the control plane for the site
 	VpcId                 string `json:"vpcId,omitempty"`                 // SiteId is the vpc id that the site is part ofa
