@@ -19,8 +19,9 @@ var _ MappedNullable = &ModelsValidationError{}
 
 // ModelsValidationError struct for ModelsValidationError
 type ModelsValidationError struct {
-	Error *string `json:"error,omitempty"`
-	Field *string `json:"field,omitempty"`
+	Error  *string `json:"error,omitempty"`
+	Field  *string `json:"field,omitempty"`
+	Reason *string `json:"reason,omitempty"`
 }
 
 // NewModelsValidationError instantiates a new ModelsValidationError object
@@ -104,6 +105,38 @@ func (o *ModelsValidationError) SetField(v string) {
 	o.Field = &v
 }
 
+// GetReason returns the Reason field value if set, zero value otherwise.
+func (o *ModelsValidationError) GetReason() string {
+	if o == nil || IsNil(o.Reason) {
+		var ret string
+		return ret
+	}
+	return *o.Reason
+}
+
+// GetReasonOk returns a tuple with the Reason field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsValidationError) GetReasonOk() (*string, bool) {
+	if o == nil || IsNil(o.Reason) {
+		return nil, false
+	}
+	return o.Reason, true
+}
+
+// HasReason returns a boolean if a field has been set.
+func (o *ModelsValidationError) HasReason() bool {
+	if o != nil && !IsNil(o.Reason) {
+		return true
+	}
+
+	return false
+}
+
+// SetReason gets a reference to the given string and assigns it to the Reason field.
+func (o *ModelsValidationError) SetReason(v string) {
+	o.Reason = &v
+}
+
 func (o ModelsValidationError) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -119,6 +152,9 @@ func (o ModelsValidationError) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Field) {
 		toSerialize["field"] = o.Field
+	}
+	if !IsNil(o.Reason) {
+		toSerialize["reason"] = o.Reason
 	}
 	return toSerialize, nil
 }

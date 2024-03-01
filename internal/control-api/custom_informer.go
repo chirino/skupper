@@ -28,7 +28,7 @@ type Informer[T any] struct {
 	response              *http.Response
 }
 
-func NewInformer[T any](adaptor InformerAdaptor[T], gtRevision *int32, request ApiWatchEventsRequest) *Informer[T] {
+func NewInformer[T any](adaptor InformerAdaptor[T], gtRevision *int32, request ApiWatchEventsInServiceNetworkRequest) *Informer[T] {
 	informer := Informer[T]{
 		watch: ModelsWatch{
 			Kind:       PtrString(adaptor.Kind()),

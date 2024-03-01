@@ -15,7 +15,7 @@ type watchEventsDataLoaderKeyType struct{}
 
 var watchEventsDataLoaderKey = watchEventsDataLoaderKeyType{}
 
-func (r ApiWatchEventsRequest) NewSharedInformerContext() context.Context {
+func (r ApiWatchEventsInServiceNetworkRequest) NewSharedInformerContext() context.Context {
 	return context.WithValue(r.ctx, watchEventsDataLoaderKey, NewWatchEventsDataLoader(r))
 }
 func getWatchEventsDataLoader(ctx context.Context) *WatchEventsDataLoader {
@@ -29,12 +29,12 @@ type WatchEventHandler = func(event ModelsWatchEvent, response *http.Response, e
 
 type WatchEventsDataLoader struct {
 	mu            sync.RWMutex
-	request       ApiWatchEventsRequest
+	request       ApiWatchEventsInServiceNetworkRequest
 	watchHandlers map[*ModelsWatch]WatchEventHandler
 	stream        *WatchEventsStream
 }
 
-func NewWatchEventsDataLoader(r ApiWatchEventsRequest) *WatchEventsDataLoader {
+func NewWatchEventsDataLoader(r ApiWatchEventsInServiceNetworkRequest) *WatchEventsDataLoader {
 	return &WatchEventsDataLoader{
 		watchHandlers: map[*ModelsWatch]WatchEventHandler{},
 		request:       r,

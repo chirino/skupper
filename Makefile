@@ -138,7 +138,8 @@ internal/control-api/client.go: ./internal/control-api/swagger.yaml
 		--ignore-file-override /src/.openapi-generator-ignore
 	gofmt -w ./internal/control-api
 
-
+# Run the following before using skupper init so that it can used the loaded images.
+# $ export SKUPPER_SERVICE_CONTROLLER_IMAGE_PULL_POLICY=IfNotPresent
 KIND_CLUSTER?=skupper
 .PHONY: kind-load-images
 kind-load-images: ## Load images into a kind cluster ${KIND_CLUSTER}

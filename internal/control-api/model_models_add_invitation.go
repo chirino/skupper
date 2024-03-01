@@ -20,8 +20,9 @@ var _ MappedNullable = &ModelsAddInvitation{}
 // ModelsAddInvitation struct for ModelsAddInvitation
 type ModelsAddInvitation struct {
 	// The email address of the user to invite (one of email or user_id is required)
-	Email          *string `json:"email,omitempty"`
-	OrganizationId *string `json:"organization_id,omitempty"`
+	Email          *string  `json:"email,omitempty"`
+	OrganizationId *string  `json:"organization_id,omitempty"`
+	Roles          []string `json:"roles,omitempty"`
 	// The user id to invite (one of email or user_id is required)
 	UserId *string `json:"user_id,omitempty"`
 }
@@ -107,6 +108,38 @@ func (o *ModelsAddInvitation) SetOrganizationId(v string) {
 	o.OrganizationId = &v
 }
 
+// GetRoles returns the Roles field value if set, zero value otherwise.
+func (o *ModelsAddInvitation) GetRoles() []string {
+	if o == nil || IsNil(o.Roles) {
+		var ret []string
+		return ret
+	}
+	return o.Roles
+}
+
+// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsAddInvitation) GetRolesOk() ([]string, bool) {
+	if o == nil || IsNil(o.Roles) {
+		return nil, false
+	}
+	return o.Roles, true
+}
+
+// HasRoles returns a boolean if a field has been set.
+func (o *ModelsAddInvitation) HasRoles() bool {
+	if o != nil && !IsNil(o.Roles) {
+		return true
+	}
+
+	return false
+}
+
+// SetRoles gets a reference to the given []string and assigns it to the Roles field.
+func (o *ModelsAddInvitation) SetRoles(v []string) {
+	o.Roles = v
+}
+
 // GetUserId returns the UserId field value if set, zero value otherwise.
 func (o *ModelsAddInvitation) GetUserId() string {
 	if o == nil || IsNil(o.UserId) {
@@ -154,6 +187,9 @@ func (o ModelsAddInvitation) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.OrganizationId) {
 		toSerialize["organization_id"] = o.OrganizationId
+	}
+	if !IsNil(o.Roles) {
+		toSerialize["roles"] = o.Roles
 	}
 	if !IsNil(o.UserId) {
 		toSerialize["user_id"] = o.UserId

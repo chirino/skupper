@@ -20,17 +20,17 @@ var _ MappedNullable = &ModelsSite{}
 // ModelsSite struct for ModelsSite
 type ModelsSite struct {
 	// the token nexd should use to reconcile Site state.
-	BearerToken *string `json:"bearer_token,omitempty"`
-	Hostname    *string `json:"hostname,omitempty"`
-	Id          *string `json:"id,omitempty"`
-	LinkSecret  *string `json:"link_secret,omitempty"`
-	Name        *string `json:"name,omitempty"`
-	Os          *string `json:"os,omitempty"`
-	OwnerId     *string `json:"owner_id,omitempty"`
-	Platform    *string `json:"platform,omitempty"`
-	PublicKey   *string `json:"public_key,omitempty"`
-	Revision    *int32  `json:"revision,omitempty"`
-	VpcId       *string `json:"vpc_id,omitempty"`
+	BearerToken      *string `json:"bearer_token,omitempty"`
+	Hostname         *string `json:"hostname,omitempty"`
+	Id               *string `json:"id,omitempty"`
+	LinkSecret       *string `json:"link_secret,omitempty"`
+	Name             *string `json:"name,omitempty"`
+	Os               *string `json:"os,omitempty"`
+	OwnerId          *string `json:"owner_id,omitempty"`
+	Platform         *string `json:"platform,omitempty"`
+	PublicKey        *string `json:"public_key,omitempty"`
+	Revision         *int32  `json:"revision,omitempty"`
+	ServiceNetworkId *string `json:"service_network_id,omitempty"`
 }
 
 // NewModelsSite instantiates a new ModelsSite object
@@ -370,36 +370,36 @@ func (o *ModelsSite) SetRevision(v int32) {
 	o.Revision = &v
 }
 
-// GetVpcId returns the VpcId field value if set, zero value otherwise.
-func (o *ModelsSite) GetVpcId() string {
-	if o == nil || IsNil(o.VpcId) {
+// GetServiceNetworkId returns the ServiceNetworkId field value if set, zero value otherwise.
+func (o *ModelsSite) GetServiceNetworkId() string {
+	if o == nil || IsNil(o.ServiceNetworkId) {
 		var ret string
 		return ret
 	}
-	return *o.VpcId
+	return *o.ServiceNetworkId
 }
 
-// GetVpcIdOk returns a tuple with the VpcId field value if set, nil otherwise
+// GetServiceNetworkIdOk returns a tuple with the ServiceNetworkId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ModelsSite) GetVpcIdOk() (*string, bool) {
-	if o == nil || IsNil(o.VpcId) {
+func (o *ModelsSite) GetServiceNetworkIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ServiceNetworkId) {
 		return nil, false
 	}
-	return o.VpcId, true
+	return o.ServiceNetworkId, true
 }
 
-// HasVpcId returns a boolean if a field has been set.
-func (o *ModelsSite) HasVpcId() bool {
-	if o != nil && !IsNil(o.VpcId) {
+// HasServiceNetworkId returns a boolean if a field has been set.
+func (o *ModelsSite) HasServiceNetworkId() bool {
+	if o != nil && !IsNil(o.ServiceNetworkId) {
 		return true
 	}
 
 	return false
 }
 
-// SetVpcId gets a reference to the given string and assigns it to the VpcId field.
-func (o *ModelsSite) SetVpcId(v string) {
-	o.VpcId = &v
+// SetServiceNetworkId gets a reference to the given string and assigns it to the ServiceNetworkId field.
+func (o *ModelsSite) SetServiceNetworkId(v string) {
+	o.ServiceNetworkId = &v
 }
 
 func (o ModelsSite) MarshalJSON() ([]byte, error) {
@@ -442,8 +442,8 @@ func (o ModelsSite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Revision) {
 		toSerialize["revision"] = o.Revision
 	}
-	if !IsNil(o.VpcId) {
-		toSerialize["vpc_id"] = o.VpcId
+	if !IsNil(o.ServiceNetworkId) {
+		toSerialize["service_network_id"] = o.ServiceNetworkId
 	}
 	return toSerialize, nil
 }

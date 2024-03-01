@@ -33,7 +33,7 @@ type ControlPlaneController struct {
 	url                   *url.URL
 	address               string
 	siteId                string
-	vpcId                 string
+	serviceNetworkId      string
 	privateKey            crypto.Key
 	publicKey             crypto.Key
 	bearerToken           []byte
@@ -93,7 +93,7 @@ func NewControlPlaneController(cli *client.VanClient, spec types.ControlPlaneSpe
 		url:                       u,
 		address:                   spec.Address,
 		siteId:                    spec.SiteId,
-		vpcId:                     spec.VpcId,
+		serviceNetworkId:          spec.ServiceNetworkId,
 		privateKey:                privateKey,
 		publicKey:                 publicKey,
 		bearerToken:               bearerToken,
@@ -141,8 +141,8 @@ func (c *ControlPlaneController) start(stopCh <-chan struct{}) error {
 	}
 
 	// event stream sharing occurs due to the informers sharing the context created in following line:
-	informerCtx := c.client.VPCApi.WatchEvents(c.ctx, c.vpcId).PublicKey(string(c.publicKey)).NewSharedInformerContext()
-	c.sitesInformer = c.client.VPCApi.ListSitesInVPC(informerCtx, c.vpcId).Informer()
+	informerCtx := c.client.ServiceNetworkApi.WatchEventsInServiceNetwork(c.ctx, c.serviceNetworkId).NewSharedInformerContext()
+	c.sitesInformer = c.client.ServiceNetworkApi.ListSitesInServiceNetwork(informerCtx, c.serviceNetworkId).Informer()
 
 	linkSecretsChanged := make(ChanEventHandler, 1)
 	c.linkSecretsInformer.AddEventHandler(linkSecretsChanged)

@@ -41,6 +41,10 @@ definitions:
         type: string
       organization_id:
         type: string
+      roles:
+        items:
+          type: string
+        type: array
       user_id:
         description: The user id to invite (one of email or user_id is required)
         type: string
@@ -66,6 +70,10 @@ definitions:
       security_group_id:
         description: SecurityGroupId is the ID of the security group to assign to
           the device.
+        type: string
+      service_network_id:
+        description: ServiceNetworkID is the ID of the Service Network the device
+          can join.
         type: string
       settings:
         additionalProperties: true
@@ -94,6 +102,14 @@ definitions:
       vpc_id:
         type: string
     type: object
+  models.AddServiceNetwork:
+    properties:
+      description:
+        example: The Red Zone
+        type: string
+      organization_id:
+        type: string
+    type: object
   models.AddSite:
     properties:
       name:
@@ -102,7 +118,7 @@ definitions:
         type: string
       public_key:
         type: string
-      vpc_id:
+      service_network_id:
         example: 694aa002-5d19-495e-980b-3d8fd508ea10
         type: string
     type: object
@@ -322,6 +338,10 @@ definitions:
         $ref: '#/definitions/models.Organization'
       organization_id:
         type: string
+      roles:
+        items:
+          type: string
+        type: array
       user_id:
         type: string
     type: object
@@ -375,32 +395,6 @@ definitions:
     - UsageOCSPSigning
     - UsageMicrosoftSGC
     - UsageNetscapeSGC
-  models.LoginEndRequest:
-    properties:
-      request_url:
-        type: string
-    type: object
-  models.LoginEndResponse:
-    properties:
-      access_token:
-        type: string
-      handled:
-        type: boolean
-      logged_in:
-        type: boolean
-      refresh_token:
-        type: string
-    type: object
-  models.LoginStartResponse:
-    properties:
-      authorization_request_url:
-        type: string
-    type: object
-  models.LogoutResponse:
-    properties:
-      logout_url:
-        type: string
-    type: object
   models.NotAllowedError:
     properties:
       error:
@@ -419,21 +413,6 @@ definitions:
         type: string
       name:
         example: zone-red
-        type: string
-      owner_id:
-        example: aa22666c-0f57-45cb-a449-16efecc04f2e
-        type: string
-    type: object
-  models.RefreshTokenRequest:
-    properties:
-      refresh_token:
-        type: string
-    type: object
-  models.RefreshTokenResponse:
-    properties:
-      access_token:
-        type: string
-      refresh_token:
         type: string
     type: object
   models.RegKey:
@@ -462,12 +441,16 @@ definitions:
         description: SecurityGroupId is the ID of the security group to assign to
           the device.
         type: string
+      service_network_id:
+        description: ServiceNetworkID is the ID of the Service Network the device
+          can join.
+        type: string
       settings:
         additionalProperties: true
         description: Settings contains general settings for the device.
         type: object
       vpc_id:
-        description: VpcID is the ID of the VPC the device will join.
+        description: VpcID is the ID of the VPC the device can join.
         type: string
     type: object
   models.SecurityGroup:
@@ -503,6 +486,22 @@ definitions:
       to_port:
         type: integer
     type: object
+  models.ServiceNetwork:
+    properties:
+      ca_certificates:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      id:
+        example: aa22666c-0f57-45cb-a449-16efecc04f2e
+        type: string
+      organization_id:
+        type: string
+      revision:
+        type: integer
+    type: object
   models.Site:
     properties:
       bearer_token:
@@ -528,7 +527,7 @@ definitions:
         type: string
       revision:
         type: integer
-      vpc_id:
+      service_network_id:
         example: 694aa002-5d19-495e-980b-3d8fd508ea10
         type: string
     type: object
@@ -558,6 +557,8 @@ definitions:
       hostname:
         example: myhost
         type: string
+      relay:
+        type: boolean
       revision:
         type: integer
       security_group_id:
@@ -598,6 +599,12 @@ definitions:
         items:
           $ref: '#/definitions/models.SecurityRule'
         type: array
+    type: object
+  models.UpdateServiceNetwork:
+    properties:
+      description:
+        example: The Red Zone
+        type: string
     type: object
   models.UpdateSite:
     properties:
@@ -648,12 +655,21 @@ definitions:
       updated_at:
         type: integer
     type: object
-  models.VPC:
+  models.UserOrganization:
     properties:
-      ca_certificates:
+      organization_id:
+        type: string
+      roles:
         items:
           type: string
         type: array
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: string
+    type: object
+  models.VPC:
+    properties:
       description:
         type: string
       id:
@@ -676,6 +692,8 @@ definitions:
         example: something bad
         type: string
       field:
+        type: string
+      reason:
         type: string
     type: object
   models.Watch:
@@ -709,6 +727,50 @@ info:
   title: Nexodus API
   version: "1.0"
 paths:
+  /api/ServiceNetworks/{id}/sites:
+    get:
+      consumes:
+      - application/json
+      description: Lists all sites for this ServiceNetwork
+      operationId: ListSitesInServiceNetwork
+      parameters:
+      - description: greater than revision
+        in: query
+        name: gt_revision
+        type: integer
+      - description: Service Network ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Site'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: List Sites
+      tags:
+      - ServiceNetwork
   /api/ca/sign:
     post:
       consumes:
@@ -1478,6 +1540,127 @@ paths:
       summary: Get Organizations
       tags:
       - Organizations
+  /api/organizations/{id}/users:
+    get:
+      consumes:
+      - application/json
+      description: Lists all the users of an organization
+      operationId: ListOrganizationUsers
+      parameters:
+      - description: Organization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserOrganization'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: List Organization Users
+      tags:
+      - Organizations
+  /api/organizations/{id}/users/{uid}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing organization user
+      operationId: DeleteOrganizationUser
+      parameters:
+      - description: Organization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/models.UserOrganization'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ValidationError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Delete a Organization User
+      tags:
+      - Organizations
+    get:
+      consumes:
+      - application/json
+      description: Gets a Organization User by Organization ID and User ID
+      operationId: GetOrganizationUser
+      parameters:
+      - description: Organization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserOrganization'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Get Organization User
+      tags:
+      - Organizations
   /api/reg-keys:
     get:
       consumes:
@@ -1871,6 +2054,254 @@ paths:
       summary: Update Security Group
       tags:
       - SecurityGroup
+  /api/service-networks:
+    get:
+      consumes:
+      - application/json
+      description: Lists all ServiceNetworks
+      operationId: ListServiceNetworks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ServiceNetwork'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: List ServiceNetworks
+      tags:
+      - ServiceNetwork
+    post:
+      consumes:
+      - application/json
+      description: Creates a named serviceNetwork with the given CIDR
+      operationId: CreateServiceNetwork
+      parameters:
+      - description: Add ServiceNetwork
+        in: body
+        name: ServiceNetwork
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddServiceNetwork'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ServiceNetwork'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ConflictsError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Create an ServiceNetwork
+      tags:
+      - ServiceNetwork
+  /api/service-networks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing serviceNetwork
+      operationId: DeleteServiceNetwork
+      parameters:
+      - description: ServiceNetwork ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/models.ServiceNetwork'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "405":
+          description: Method Not Allowed
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Delete ServiceNetwork
+      tags:
+      - ServiceNetwork
+    get:
+      consumes:
+      - application/json
+      description: Gets a ServiceNetwork by ServiceNetwork ID
+      operationId: GetServiceNetwork
+      parameters:
+      - description: ServiceNetwork ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ServiceNetwork'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Get ServiceNetworks
+      tags:
+      - ServiceNetwork
+    patch:
+      consumes:
+      - application/json
+      description: Updates a serviceNetwork by ID
+      operationId: UpdateServiceNetwork
+      parameters:
+      - description: ServiceNetwork ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ServiceNetwork Update
+        in: body
+        name: update
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateServiceNetwork'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ServiceNetwork'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Update ServiceNetworks
+      tags:
+      - ServiceNetwork
+  /api/service-networks/{id}/events:
+    post:
+      consumes:
+      - application/json
+      description: Watches events occurring in the service network
+      operationId: WatchEventsInServiceNetwork
+      parameters:
+      - description: List of events to watch
+        in: body
+        name: Watches
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.Watch'
+          type: array
+      - description: Service Network ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WatchEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/models.BaseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.InternalServerError'
+      summary: Watch events occurring in the service network
+      tags:
+      - ServiceNetwork
   /api/sites:
     get:
       consumes:
@@ -2580,50 +3011,6 @@ paths:
       summary: List Security Groups in a VPC
       tags:
       - VPC
-  /api/vpcs/{id}/sites:
-    get:
-      consumes:
-      - application/json
-      description: Lists all sites for this VPC
-      operationId: ListSitesInVPC
-      parameters:
-      - description: greater than revision
-        in: query
-        name: gt_revision
-        type: integer
-      - description: VPC ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Site'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.BaseError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.BaseError'
-        "429":
-          description: Too Many Requests
-          schema:
-            $ref: '#/definitions/models.BaseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.InternalServerError'
-      summary: List Sites
-      tags:
-      - VPC
   /check/auth:
     get:
       consumes:
@@ -2696,56 +3083,81 @@ paths:
       tags:
       - Auth
   /web/login/end:
-    post:
+    get:
       description: Handles the callback from the OAuth2/OpenID provider and verifies
         the tokens.
       operationId: WebEnd
       parameters:
-      - description: End Login
-        in: body
-        name: data
+      - description: oauth2 code from authorization server
+        in: query
+        name: code
         required: true
-        schema:
-          $ref: '#/definitions/models.LoginEndRequest'
+        type: string
+      - description: state value from the login start request
+        in: query
+        name: state
+        required: true
+        type: string
+      - description: error message if login failed
+        in: query
+        name: error
+        required: true
+        type: string
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "302":
+          description: Redirects to the URLs specified in the login start request
           schema:
-            $ref: '#/definitions/models.LoginEndResponse'
+            type: string
       summary: Completes OIDC Web Login
       tags:
       - Auth
   /web/login/start:
-    post:
+    get:
       description: Generates state and nonce, then redirects the user to the OAuth2
         authorization URL.
       operationId: WebStart
+      parameters:
+      - description: URL to redirect to if login succeeds
+        in: query
+        name: redirect
+        required: true
+        type: string
+      - description: URL to redirect to if login fails (optional)
+        in: query
+        name: failure
+        type: string
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "302":
+          description: Redirects to the OAuth2 authorization URL
           schema:
-            $ref: '#/definitions/models.LoginStartResponse'
+            type: string
       summary: Initiates OIDC Web Login
       tags:
       - Auth
   /web/logout:
-    post:
+    get:
       consumes:
       - application/json
       description: Provides the URL to initiate the logout process for the current
         user.
       operationId: Logout
+      parameters:
+      - description: URL to redirect to after logout
+        in: query
+        name: redirect
+        required: true
+        type: string
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "302":
+          description: Redirects to the OAuth2 logout URL
           schema:
-            $ref: '#/definitions/models.LogoutResponse'
+            type: string
       summary: Generate Logout URL
       tags:
       - Auth
@@ -2755,20 +3167,11 @@ paths:
       - application/json
       description: Obtains and updates a new access token for the user.
       operationId: Refresh
-      parameters:
-      - description: End Login
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/models.RefreshTokenRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.RefreshTokenResponse'
+        "204":
+          description: No Content
       summary: Refresh Access Token
       tags:
       - Auth

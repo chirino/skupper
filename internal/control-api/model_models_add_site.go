@@ -19,10 +19,10 @@ var _ MappedNullable = &ModelsAddSite{}
 
 // ModelsAddSite struct for ModelsAddSite
 type ModelsAddSite struct {
-	Name      *string `json:"name,omitempty"`
-	Platform  *string `json:"platform,omitempty"`
-	PublicKey *string `json:"public_key,omitempty"`
-	VpcId     *string `json:"vpc_id,omitempty"`
+	Name             *string `json:"name,omitempty"`
+	Platform         *string `json:"platform,omitempty"`
+	PublicKey        *string `json:"public_key,omitempty"`
+	ServiceNetworkId *string `json:"service_network_id,omitempty"`
 }
 
 // NewModelsAddSite instantiates a new ModelsAddSite object
@@ -138,36 +138,36 @@ func (o *ModelsAddSite) SetPublicKey(v string) {
 	o.PublicKey = &v
 }
 
-// GetVpcId returns the VpcId field value if set, zero value otherwise.
-func (o *ModelsAddSite) GetVpcId() string {
-	if o == nil || IsNil(o.VpcId) {
+// GetServiceNetworkId returns the ServiceNetworkId field value if set, zero value otherwise.
+func (o *ModelsAddSite) GetServiceNetworkId() string {
+	if o == nil || IsNil(o.ServiceNetworkId) {
 		var ret string
 		return ret
 	}
-	return *o.VpcId
+	return *o.ServiceNetworkId
 }
 
-// GetVpcIdOk returns a tuple with the VpcId field value if set, nil otherwise
+// GetServiceNetworkIdOk returns a tuple with the ServiceNetworkId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ModelsAddSite) GetVpcIdOk() (*string, bool) {
-	if o == nil || IsNil(o.VpcId) {
+func (o *ModelsAddSite) GetServiceNetworkIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ServiceNetworkId) {
 		return nil, false
 	}
-	return o.VpcId, true
+	return o.ServiceNetworkId, true
 }
 
-// HasVpcId returns a boolean if a field has been set.
-func (o *ModelsAddSite) HasVpcId() bool {
-	if o != nil && !IsNil(o.VpcId) {
+// HasServiceNetworkId returns a boolean if a field has been set.
+func (o *ModelsAddSite) HasServiceNetworkId() bool {
+	if o != nil && !IsNil(o.ServiceNetworkId) {
 		return true
 	}
 
 	return false
 }
 
-// SetVpcId gets a reference to the given string and assigns it to the VpcId field.
-func (o *ModelsAddSite) SetVpcId(v string) {
-	o.VpcId = &v
+// SetServiceNetworkId gets a reference to the given string and assigns it to the ServiceNetworkId field.
+func (o *ModelsAddSite) SetServiceNetworkId(v string) {
+	o.ServiceNetworkId = &v
 }
 
 func (o ModelsAddSite) MarshalJSON() ([]byte, error) {
@@ -189,8 +189,8 @@ func (o ModelsAddSite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.PublicKey) {
 		toSerialize["public_key"] = o.PublicKey
 	}
-	if !IsNil(o.VpcId) {
-		toSerialize["vpc_id"] = o.VpcId
+	if !IsNil(o.ServiceNetworkId) {
+		toSerialize["service_network_id"] = o.ServiceNetworkId
 	}
 	return toSerialize, nil
 }

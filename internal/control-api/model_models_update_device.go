@@ -22,6 +22,7 @@ type ModelsUpdateDevice struct {
 	AdvertiseCidrs  []string         `json:"advertise_cidrs,omitempty"`
 	Endpoints       []ModelsEndpoint `json:"endpoints,omitempty"`
 	Hostname        *string          `json:"hostname,omitempty"`
+	Relay           *bool            `json:"relay,omitempty"`
 	Revision        *int32           `json:"revision,omitempty"`
 	SecurityGroupId *string          `json:"security_group_id,omitempty"`
 	SymmetricNat    *bool            `json:"symmetric_nat,omitempty"`
@@ -139,6 +140,38 @@ func (o *ModelsUpdateDevice) HasHostname() bool {
 // SetHostname gets a reference to the given string and assigns it to the Hostname field.
 func (o *ModelsUpdateDevice) SetHostname(v string) {
 	o.Hostname = &v
+}
+
+// GetRelay returns the Relay field value if set, zero value otherwise.
+func (o *ModelsUpdateDevice) GetRelay() bool {
+	if o == nil || IsNil(o.Relay) {
+		var ret bool
+		return ret
+	}
+	return *o.Relay
+}
+
+// GetRelayOk returns a tuple with the Relay field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsUpdateDevice) GetRelayOk() (*bool, bool) {
+	if o == nil || IsNil(o.Relay) {
+		return nil, false
+	}
+	return o.Relay, true
+}
+
+// HasRelay returns a boolean if a field has been set.
+func (o *ModelsUpdateDevice) HasRelay() bool {
+	if o != nil && !IsNil(o.Relay) {
+		return true
+	}
+
+	return false
+}
+
+// SetRelay gets a reference to the given bool and assigns it to the Relay field.
+func (o *ModelsUpdateDevice) SetRelay(v bool) {
+	o.Relay = &v
 }
 
 // GetRevision returns the Revision field value if set, zero value otherwise.
@@ -287,6 +320,9 @@ func (o ModelsUpdateDevice) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Hostname) {
 		toSerialize["hostname"] = o.Hostname
+	}
+	if !IsNil(o.Relay) {
+		toSerialize["relay"] = o.Relay
 	}
 	if !IsNil(o.Revision) {
 		toSerialize["revision"] = o.Revision

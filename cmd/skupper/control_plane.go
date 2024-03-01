@@ -88,10 +88,10 @@ func registerWithControlPlane(initFlags *InitFlags, routerCreateOpts *types.Site
 	}
 
 	site, _, err := client.SitesApi.CreateSite(ctx).Site(control_api.ModelsAddSite{
-		Platform:  control_api.PtrString(string(platform)),
-		Name:      control_api.PtrString(routerCreateOpts.SkupperName),
-		PublicKey: control_api.PtrString(pub.String()),
-		VpcId:     regKeyModel.VpcId,
+		Platform:         control_api.PtrString(string(platform)),
+		Name:             control_api.PtrString(routerCreateOpts.SkupperName),
+		PublicKey:        control_api.PtrString(pub.String()),
+		ServiceNetworkId: regKeyModel.ServiceNetworkId,
 	}).Execute()
 	if err != nil {
 		return fmt.Errorf("could register site with the control plan: %w", err)
@@ -122,7 +122,7 @@ func registerWithControlPlane(initFlags *InitFlags, routerCreateOpts *types.Site
 	routerCreateOpts.ControlPlane.URL = controlPaneURL.String()
 	routerCreateOpts.ControlPlane.Address = initFlags.controlPlaneAddress
 	routerCreateOpts.ControlPlane.SiteId = site.GetId()
-	routerCreateOpts.ControlPlane.VpcId = site.GetVpcId()
+	routerCreateOpts.ControlPlane.ServiceNetworkId = site.GetServiceNetworkId()
 
 	// Now that the site is registered, subsequent API calls must use the per site bearer token
 	// which can only be obtained by decrypting it with this private which will only be known by the site.

@@ -22,7 +22,6 @@ type ModelsOrganization struct {
 	Description *string `json:"description,omitempty"`
 	Id          *string `json:"id,omitempty"`
 	Name        *string `json:"name,omitempty"`
-	OwnerId     *string `json:"owner_id,omitempty"`
 }
 
 // NewModelsOrganization instantiates a new ModelsOrganization object
@@ -138,38 +137,6 @@ func (o *ModelsOrganization) SetName(v string) {
 	o.Name = &v
 }
 
-// GetOwnerId returns the OwnerId field value if set, zero value otherwise.
-func (o *ModelsOrganization) GetOwnerId() string {
-	if o == nil || IsNil(o.OwnerId) {
-		var ret string
-		return ret
-	}
-	return *o.OwnerId
-}
-
-// GetOwnerIdOk returns a tuple with the OwnerId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsOrganization) GetOwnerIdOk() (*string, bool) {
-	if o == nil || IsNil(o.OwnerId) {
-		return nil, false
-	}
-	return o.OwnerId, true
-}
-
-// HasOwnerId returns a boolean if a field has been set.
-func (o *ModelsOrganization) HasOwnerId() bool {
-	if o != nil && !IsNil(o.OwnerId) {
-		return true
-	}
-
-	return false
-}
-
-// SetOwnerId gets a reference to the given string and assigns it to the OwnerId field.
-func (o *ModelsOrganization) SetOwnerId(v string) {
-	o.OwnerId = &v
-}
-
 func (o ModelsOrganization) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -188,9 +155,6 @@ func (o ModelsOrganization) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
-	}
-	if !IsNil(o.OwnerId) {
-		toSerialize["owner_id"] = o.OwnerId
 	}
 	return toSerialize, nil
 }

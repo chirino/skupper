@@ -19,14 +19,13 @@ var _ MappedNullable = &ModelsVPC{}
 
 // ModelsVPC struct for ModelsVPC
 type ModelsVPC struct {
-	CaCertificates []string `json:"ca_certificates,omitempty"`
-	Description    *string  `json:"description,omitempty"`
-	Id             *string  `json:"id,omitempty"`
-	Ipv4Cidr       *string  `json:"ipv4_cidr,omitempty"`
-	Ipv6Cidr       *string  `json:"ipv6_cidr,omitempty"`
-	OrganizationId *string  `json:"organization_id,omitempty"`
-	PrivateCidr    *bool    `json:"private_cidr,omitempty"`
-	Revision       *int32   `json:"revision,omitempty"`
+	Description    *string `json:"description,omitempty"`
+	Id             *string `json:"id,omitempty"`
+	Ipv4Cidr       *string `json:"ipv4_cidr,omitempty"`
+	Ipv6Cidr       *string `json:"ipv6_cidr,omitempty"`
+	OrganizationId *string `json:"organization_id,omitempty"`
+	PrivateCidr    *bool   `json:"private_cidr,omitempty"`
+	Revision       *int32  `json:"revision,omitempty"`
 }
 
 // NewModelsVPC instantiates a new ModelsVPC object
@@ -44,38 +43,6 @@ func NewModelsVPC() *ModelsVPC {
 func NewModelsVPCWithDefaults() *ModelsVPC {
 	this := ModelsVPC{}
 	return &this
-}
-
-// GetCaCertificates returns the CaCertificates field value if set, zero value otherwise.
-func (o *ModelsVPC) GetCaCertificates() []string {
-	if o == nil || IsNil(o.CaCertificates) {
-		var ret []string
-		return ret
-	}
-	return o.CaCertificates
-}
-
-// GetCaCertificatesOk returns a tuple with the CaCertificates field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsVPC) GetCaCertificatesOk() ([]string, bool) {
-	if o == nil || IsNil(o.CaCertificates) {
-		return nil, false
-	}
-	return o.CaCertificates, true
-}
-
-// HasCaCertificates returns a boolean if a field has been set.
-func (o *ModelsVPC) HasCaCertificates() bool {
-	if o != nil && !IsNil(o.CaCertificates) {
-		return true
-	}
-
-	return false
-}
-
-// SetCaCertificates gets a reference to the given []string and assigns it to the CaCertificates field.
-func (o *ModelsVPC) SetCaCertificates(v []string) {
-	o.CaCertificates = v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
@@ -312,9 +279,6 @@ func (o ModelsVPC) MarshalJSON() ([]byte, error) {
 
 func (o ModelsVPC) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.CaCertificates) {
-		toSerialize["ca_certificates"] = o.CaCertificates
-	}
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}

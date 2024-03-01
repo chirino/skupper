@@ -25,6 +25,8 @@ type ModelsAddRegKey struct {
 	ExpiresAt *string `json:"expires_at,omitempty"`
 	// SecurityGroupId is the ID of the security group to assign to the device.
 	SecurityGroupId *string `json:"security_group_id,omitempty"`
+	// ServiceNetworkID is the ID of the Service Network the device can join.
+	ServiceNetworkId *string `json:"service_network_id,omitempty"`
 	// Settings contains general settings for the device.
 	Settings map[string]interface{} `json:"settings,omitempty"`
 	// SingleUse only allows the registration key to be used once.
@@ -146,6 +148,38 @@ func (o *ModelsAddRegKey) SetSecurityGroupId(v string) {
 	o.SecurityGroupId = &v
 }
 
+// GetServiceNetworkId returns the ServiceNetworkId field value if set, zero value otherwise.
+func (o *ModelsAddRegKey) GetServiceNetworkId() string {
+	if o == nil || IsNil(o.ServiceNetworkId) {
+		var ret string
+		return ret
+	}
+	return *o.ServiceNetworkId
+}
+
+// GetServiceNetworkIdOk returns a tuple with the ServiceNetworkId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsAddRegKey) GetServiceNetworkIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ServiceNetworkId) {
+		return nil, false
+	}
+	return o.ServiceNetworkId, true
+}
+
+// HasServiceNetworkId returns a boolean if a field has been set.
+func (o *ModelsAddRegKey) HasServiceNetworkId() bool {
+	if o != nil && !IsNil(o.ServiceNetworkId) {
+		return true
+	}
+
+	return false
+}
+
+// SetServiceNetworkId gets a reference to the given string and assigns it to the ServiceNetworkId field.
+func (o *ModelsAddRegKey) SetServiceNetworkId(v string) {
+	o.ServiceNetworkId = &v
+}
+
 // GetSettings returns the Settings field value if set, zero value otherwise.
 func (o *ModelsAddRegKey) GetSettings() map[string]interface{} {
 	if o == nil || IsNil(o.Settings) {
@@ -260,6 +294,9 @@ func (o ModelsAddRegKey) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.SecurityGroupId) {
 		toSerialize["security_group_id"] = o.SecurityGroupId
+	}
+	if !IsNil(o.ServiceNetworkId) {
+		toSerialize["service_network_id"] = o.ServiceNetworkId
 	}
 	if !IsNil(o.Settings) {
 		toSerialize["settings"] = o.Settings

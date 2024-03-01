@@ -61,7 +61,7 @@ const (
 	SiteConfigControlPlaneURLKey                   string = "control-plane-url"
 	SiteConfigControlPlaneAddressKey               string = "control-plane-address"
 	SiteConfigControlPlaneSiteIdKey                string = "control-plane-site-id"
-	SiteConfigControlPlaneVpcIdKey                 string = "control-plane-vpc-id"
+	SiteConfigControlPlaneServiceNetworkIdKey      string = "control-plane-service-network-id"
 	SiteConfigControlPlaneBearerTokenEncryptedKey  string = "control-plane-bearer-token-encrypted"
 	SiteConfigControlPlanePrivateKeyKey            string = "control-plane-private-key"
 
@@ -474,7 +474,7 @@ func WriteSiteConfig(spec types.SiteConfigSpec, namespace string) (*corev1.Confi
 			siteConfig.Data[SiteConfigControlPlaneInsecureSkipTlsVerifyKey] = "true"
 		}
 		siteConfig.Data[SiteConfigControlPlaneSiteIdKey] = spec.ControlPlane.SiteId
-		siteConfig.Data[SiteConfigControlPlaneVpcIdKey] = spec.ControlPlane.VpcId
+		siteConfig.Data[SiteConfigControlPlaneServiceNetworkIdKey] = spec.ControlPlane.ServiceNetworkId
 		siteSecrets.Data[SiteConfigControlPlaneBearerTokenEncryptedKey] = []byte(spec.ControlPlane.BearerTokenEncrypted)
 		siteSecrets.Data[SiteConfigControlPlanePrivateKeyKey] = []byte(spec.ControlPlane.PrivateKey)
 	}
@@ -815,7 +815,7 @@ func ReadSiteConfig(siteConfig *corev1.ConfigMap, siteSecrets *corev1.Secret, na
 		Address:               siteConfig.Data[SiteConfigControlPlaneAddressKey],
 		InsecureSkipTlsVerify: parseBool(siteConfig.Data[SiteConfigControlPlaneInsecureSkipTlsVerifyKey]),
 		SiteId:                siteConfig.Data[SiteConfigControlPlaneSiteIdKey],
-		VpcId:                 siteConfig.Data[SiteConfigControlPlaneVpcIdKey],
+		ServiceNetworkId:      siteConfig.Data[SiteConfigControlPlaneServiceNetworkIdKey],
 		BearerTokenEncrypted:  string(siteSecrets.Data[SiteConfigControlPlaneBearerTokenEncryptedKey]),
 		PrivateKey:            string(siteSecrets.Data[SiteConfigControlPlanePrivateKeyKey]),
 	}

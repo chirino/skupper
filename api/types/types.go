@@ -398,7 +398,7 @@ type ControlPlaneSpec struct {
 	Address               string `json:"address,omitempty"`               // Address is the IP or hostname of the control plane.  If not specified, the URL will be used
 	InsecureSkipTlsVerify bool   `json:"insecureSkipTlsVerify,omitempty"` // InsecureSkipTlsVerify is true if the control plane's certificate should not be verified
 	SiteId                string `json:"siteId,omitempty"`                // SiteId is the id assigned by the control plane for the site
-	VpcId                 string `json:"vpcId,omitempty"`                 // SiteId is the vpc id that the site is part ofa
+	ServiceNetworkId      string `json:"serviceNetworkId,omitempty"`      // ServiceNetworkId is the service network id that the site is part of
 	BearerTokenEncrypted  string `json:"bearerTokenEncrypted,omitempty"`  // BearerTokenEncrypted is the encrypted bearer token used to authenticate with the control plane
 	PrivateKey            string `json:"privateKey,omitempty"`            // PrivateKey is the private key that can be used to decrypt the bearer token
 }

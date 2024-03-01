@@ -12,11 +12,11 @@ import (
 
 var Logger *zap.SugaredLogger = nil
 
-func (r ApiWatchEventsRequest) WatchEventsStream() (*WatchEventsStream, *http.Response, error) {
+func (r ApiWatchEventsInServiceNetworkRequest) WatchEventsStream() (*WatchEventsStream, *http.Response, error) {
 	return r.ApiService.WatchEventsStream(r)
 }
 
-func (a *VPCApiService) WatchEventsStream(r ApiWatchEventsRequest) (*WatchEventsStream, *http.Response, error) {
+func (a *ServiceNetworkApiService) WatchEventsStream(r ApiWatchEventsInServiceNetworkRequest) (*WatchEventsStream, *http.Response, error) {
 	// this is a stream friendly version of WatchEventsExecute
 	var (
 		localVarHTTPMethod  = http.MethodPost
@@ -25,12 +25,12 @@ func (a *VPCApiService) WatchEventsStream(r ApiWatchEventsRequest) (*WatchEvents
 		localVarReturnValue *WatchEventsStream // different from WatchEventsExecute
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "VPCApiService.WatchEvents")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ServiceNetworkApiService.WatchEventsInServiceNetwork")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/vpcs/{id}/events"
+	localVarPath := localBasePath + "/api/service-networks/{id}/events"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -40,9 +40,6 @@ func (a *VPCApiService) WatchEventsStream(r ApiWatchEventsRequest) (*WatchEvents
 		return localVarReturnValue, nil, reportError("watches is required and must be specified")
 	}
 
-	if r.publicKey != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "public_key", r.publicKey, "")
-	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
